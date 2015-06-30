@@ -41,7 +41,6 @@ var numOfWorkers = 0;
 // auto respawn workers when they die
 var autoSpawn = false;
 // flags
-var isStarting = false;
 var isReloading = false;
 var isShutdown = false;
 var isMaster = false;
