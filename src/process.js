@@ -18,6 +18,7 @@ var SIGNALS = {
 };
 // exit codes
 var CODES = {
+	'0': 'Expected Exit',
 	'1': 'Uncaught Fatal Exception',
 	'3': 'Internal Javascript Parse Error',
 	'4': 'Internal Javascript Evaluation Failure',
@@ -402,7 +403,7 @@ function noMoreWorkers() {
 
 function getCodeName(code) {
 
-	if (!code) {
+	if (code === null) {
 		return 'Unknown';
 	}
 
