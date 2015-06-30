@@ -82,8 +82,8 @@ exports.start = function (config) {
 	autoSpawn = config.autoSpawn || false;
 
 	if (isMaster) {
-		logger.info('Number of workers:', numOfWorkers);
-		logger.info('Auto re-spawn:', autoSpawn);
+		logger.info('Number of workers: ' + numOfWorkers);
+		logger.info('Auto re-spawn: ' + autoSpawn);
 	}
 
 	// start cluster process
@@ -101,7 +101,7 @@ function start() {
 	startListeners();
 	var inClusterMode = startClusterMode();
 	if (isMaster) {
-		logger.info('Staring in cluster mode?', inClusterMode);
+		logger.info('Staring in cluster mode: ' + inClusterMode);
 	}
 }
 
@@ -254,7 +254,7 @@ function startWorker() {
 				shutdown();
 				break;
 			default:
-				logger.error('Unknown command from master process:', data.command);
+				logger.error('Unknown command from master process: ' + data.command);
 				break;
 			
 				
@@ -346,13 +346,13 @@ function shutdown() {
 			code = 1;
 		}
 
-		logger.info('Exit: PID', process.pid);
+		logger.info('Exit: PID - ' + process.pid);
 
 		process.exit(code);
 	};
 
 	logger.info(
-		'Number of shutdown tasks before shutting down:',
+		'Number of shutdown tasks before shutting down: ' +
 		shutdownTasks.length
 	);
 
@@ -381,7 +381,7 @@ function send(msg, worker) {
 	}
 	if (worker) {
 		// send message to specified worker only
-		logger.info('Sending message to worker: ID', worker.id);
+		logger.info('Sending message to worker: ID - ' + worker.id);
 		worker.send(msg);
 		return;
 	}
