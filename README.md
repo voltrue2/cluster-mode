@@ -66,6 +66,12 @@ This property manages the number of worker processes you want to start with.
 
 **NOTE:** Set this value to `0` to start your application in **non-cluster** mode (no workers).
 
+##### autoSpawn
+
+If set to `true`, `cluster-mode` will automatically re-spawn a new worker to take place of the dead worker.
+
+If workers die in less than **10** seconds, however, it will consider, there is something wrong with the application and will **NOT** re-spawn a new worker.
+
 ### .isMaster()
 
 Returns `true` if your process is in `cluster-mode` (with workers) **and** a master process.

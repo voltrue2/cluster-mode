@@ -36,7 +36,10 @@ var CMD = {
 	RELOAD: 'reload',
 	EXIT: 'exit'
 };
-
+// minimum lifespan for workers
+// workers must be alive for at least 1 second
+// otherwise it will NOT be auto re-spawn
+var MIN_LIFE = 10000;
 // number of works to start
 var numOfWorkers = 0;
 // auto respawn workers when they die
@@ -49,6 +52,8 @@ var isMaster = false;
 var reloaded = 0;
 // shutdown tasks to be executed before shutting down
 var shutdownTasks = [];
+// worker map used for master process only
+var workerMap = {};
 
 exports.addShutdownTask = function (task) {
 
@@ -161,6 +166,11 @@ function startMaster() {
 
 function createWorker() {
 	var worker = cluster.fork();
+	// add it to the map
+	workerMap[worker.id] = {
+		started: Date.now(),
+		pid: worker.process.pid
+	};
 	// master to worker message listener
 	worker.on('message', function (data) {
 		try {
@@ -182,6 +192,11 @@ function handleWorkerExit(worker, code, sig) {
 		Object.keys(cluster.workers).length + '/' + numOfWorkers 
 	);
 
+	// keep the copy
+	var workerData = workerMap[worker.id];
+	// remove from the map
+	delete workerMap[worker.id];
+
 	// this is for master process
 	if (isReloading) {
 		handleReloading();
@@ -193,6 +208,15 @@ function handleWorkerExit(worker, code, sig) {
 		// auto-respawn the dead worker
 		// if master wants to shutdown, workers don't auto re-spawn
 		if (!isShutdown) {
+			if (Date.now() - workerData.started < MIN_LIFE) {
+				// number of worker process has permanently decreased 
+				numOfWorkers -= 1;
+				logger.error(
+					'A worker process must be alive for at least ' + MIN_LIFE + 'ms ' +
+					'(# of worker: ' + numOfWorkers + ')'
+				);
+				return;
+			}
 			createWorker();
 			logger.info('Auto re-spawned a new worker process');
 		}
