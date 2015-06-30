@@ -178,7 +178,7 @@ function handleWorkerExit(worker, code, sig) {
 	logger.info(
 		'Cluster process is exiting <signal: ' +
 		getCodeName(code) + ', ' + sig +
-		'> (worker: ' + worker.id + ') [pid:' + worker.process.pid + ']: ' +
+		'> (worker: ' + worker.id + ') [pid: ' + worker.process.pid + ']: ' +
 		Object.keys(cluster.workers).length + '/' + numOfWorkers 
 	);
 
