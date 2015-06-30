@@ -1,0 +1,71 @@
+# cluster-mode
+
+©Nobuyori Takahashi < voltrue2@yahoo.com >
+
+A cluster process management module for node.js application.
+
+This module's intention is not to replace the built-in `cluster` module, but to extend it for usability and fanctionality.
+
+## How To Install
+
+```
+npm install cluster-mode
+```
+
+## How To Use
+
+```javascript
+var cluster = require('cluster-mode');
+var config = {
+	max: 8 // start the application with 8 workers
+	log: require('bunyan').createLogger({ name: 'myClusterApp' })
+};
+cluster.start(config);
+```
+
+## Methods
+
+Avialable functions of this module.
+
+### .addShutdownTask(task [Function])
+
+Adds a function to be executed before your application process exits.
+
+Task function will recieve 1 argument, a callback function.
+
+It is useful when you need to clean up your application before terminating the prrocess.
+
+Exmaple:
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.addShutdownTask(function (cb) {
+	// do what needs to be done
+	// when all is finished, move on to next
+	cb();
+});
+```
+
+### .start(config [Object])
+
+You must invoke this function in order to start your application process.
+
+#### Config Object
+
+```
+{
+	max: <number> // max number of worker processes to spawn
+	log: <object> // logging module object. cluster-mode supports bunyan, winston, log4js, and gracelog
+	autoSpawn: <boolean> // automatically re-spawn dead worker processes
+}
+```
+
+##### max
+
+This property manages the number of worker processes you want to start with.
+
+**NOTE:** Set this value to `0` to start your application in **non-cluster** mode (no workers).
+
+### .isMaster()
+
+Returns `true` if your process is in `cluster-mode` (with workers) **and** a master process.
