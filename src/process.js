@@ -6,6 +6,8 @@ var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
 var cluster = require('cluster');
 var logger = require('../lib/logger');
+var msg = require('../lib/msg');
+var sigCode = require('../lib/sigcode');
 
 // default number of max workers to start
 var MAX = os.cpus().length;
@@ -16,21 +18,6 @@ var SIGNALS = {
 	SIGQUIT: 'SIGQUIT',
 	SIGTERM: 'SIGTERM'
 };
-// exit codes
-var CODES = {
-	'0': 'Expected Exit',
-	'1': 'Uncaught Fatal Exception',
-	'3': 'Internal Javascript Parse Error',
-	'4': 'Internal Javascript Evaluation Failure',
-	'5': 'Fatal Error',
-	'6': 'Non-function Internal Exception Handler',
-	'7': 'Internal Exception Handler Run-Time Failure',
-	'9': 'Invalid Argument',
-	'10': 'Internal Javascript Run-Time Failure',
-	'12': 'Invalid Debug Argument'
-};
-// signal exit code > 128
-var SIG_CODE = 128;
 // reload command
 var CMD = {
 	RELOAD: 'reload',
@@ -146,7 +133,7 @@ function startListeners() {
 	process.on('exit', function (code) {
 		if (code) {
 			// some kind of error
-			var errorName = getCodeName(code);
+			var errorName = sigCode.getNameByExitCode(code);
 			logger.error('Error termination: (code: ' + code + ')', errorName);
 		}
 	});
@@ -187,7 +174,7 @@ function handleWorkerExit(worker, code, sig) {
 
 	logger.info(
 		'Cluster process is exiting <signal: ' +
-		getCodeName(code) + ', ' + sig +
+		sigCode.getNameByExitCode(code) + ', ' + sig +
 		'> (worker: ' + worker.id + ') [pid: ' + worker.process.pid + ']: ' +
 		Object.keys(cluster.workers).length + '/' + numOfWorkers 
 	);
@@ -229,7 +216,7 @@ function handleWorkerExit(worker, code, sig) {
 
 		logger.info(
 			'No more workers running (shutdown: ' + isShutdown +
-			') [code: ' + getCodeName(code) + ', ' + code + ']'
+			') [code: ' + sigCode.getNameByExitCode(code) + ', ' + code + ']'
 		);
 
 		if (isShutdown || code) {
@@ -315,7 +302,7 @@ function reload() {
 			// when the worker is reloaded
 			emitter.once('reloaded', next);
 			// send reload command
-			send({ command: CMD.RELOAD }, cluster.workers[id]);
+			msg.send({ command: CMD.RELOAD }, cluster.workers[id]);
 		}, done);
 	}
 }
@@ -353,7 +340,7 @@ function exit(sig) {
 				'Instruct worker process to exit: ' +
 				'(worker: ' + id + ') '
 			);
-			send({ command: CMD.EXIT }, cluster.workers[id]);
+			msg.send({ command: CMD.EXIT }, cluster.workers[id]);
 		});
 		return;
 	}
@@ -394,48 +381,6 @@ function shutdown() {
 	}, done);
 }
 
-function send(msg, worker) {
-	if (!numOfWorkers) {
-		// only in cluster mode
-		return;
-	}
-	try {
-		msg = JSON.stringify(msg);
-	} catch (e) {
-		// TODO: do something here?
-	}
-	if (worker) {
-		// send message to specified worker only
-		logger.verbose('Sending message to worker: ID - ' + worker.id);
-		worker.send(msg);
-		return;
-	}
-	if (cluster.isMaster) {
-		// send message to all workers
-		for (var id in cluster.workers) {
-			cluster.workers[id].send(msg);
-		}
-		return;
-	}
-	// send message to master
-	process.send(msg);
-}
-
 function noMoreWorkers() {
 	return !Object.keys(cluster.workers).length;
-}
-
-function getCodeName(code) {
-
-	if (code === null) {
-		return 'Unknown';
-	}
-
-	var name = CODES[code.toString()] || 'Unknown';
-
-	if (code > SIG_CODE) {
-		name = 'Signal Exit';
-	}
-
-	return name;
 }
