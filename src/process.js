@@ -351,7 +351,7 @@ function shutdown() {
 		process.exit(code);
 	};
 
-	logger.info(
+	logger.verbose(
 		'Number of shutdown tasks before shutting down: ' +
 		shutdownTasks.length
 	);
@@ -381,7 +381,7 @@ function send(msg, worker) {
 	}
 	if (worker) {
 		// send message to specified worker only
-		logger.info('Sending message to worker: ID - ' + worker.id);
+		logger.verbose('Sending message to worker: ID - ' + worker.id);
 		worker.send(msg);
 		return;
 	}
@@ -401,6 +401,11 @@ function noMoreWorkers() {
 }
 
 function getCodeName(code) {
+
+	if (!code) {
+		return 'Unknown';
+	}
+
 	var name = CODES[code.toString()] || 'Unknown';
 
 	if (code > SIG_CODE) {

@@ -1,8 +1,8 @@
 var prcs = require('../index');
 
-var logger = require('bunyan').createLogger({ name: 'test' });
+//var logger = require('bunyan').createLogger({ name: 'test' });
 //var logger = require('winston');
-//var logger = require('gracelog').create('test');
+var logger = require('gracelog').create('test');
 
 var config = {
 	max: 4,
