@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+## Version 0.0.4
+
+### Added
+
+##### Events added
+
+`cluster.ready`, `non.cluster.ready`, `auto.spawn`, `reload.complete`, and `exit` are added.
+
+### Changed
+
+None
+
+### Deprecated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.0.3
 
 ### Added

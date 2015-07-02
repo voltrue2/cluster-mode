@@ -17,6 +17,20 @@ prcs.addShutdownTask(function (cb) {
 	}, 1);
 });
 
+prcs.addShutdownTask(function (cb) {
+	setTimeout(function () {
+		cb();
+	}, 1);
+});
+
+prcs.on('cluster.ready', function () {
+	console.log('cluster process is ready!!!');
+});
+
+prcs.on('exit', function () {
+	console.log('exit!!!!!!!!!!!');
+});
+
 prcs.start(config);
 
 setInterval(function () {

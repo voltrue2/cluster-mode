@@ -23,6 +23,8 @@ var config = {
 cluster.start(config);
 ```
 
+***
+
 ## Methods
 
 Avialable functions of this module.
@@ -95,3 +97,30 @@ Returns `true` if your process is in `cluster-mode` (with workers) **and** a mas
 ### .isCluster()
 
 Returns `true` if your process is running with workers.
+
+***
+
+## Events
+
+`cluster-mode` module is also an event emitter.
+
+### cluster.ready
+
+Emitted when your cluster process is ready.
+
+### non.cluster.ready
+
+Emitted when your non-cluster process is ready
+
+### auto.spawn
+
+Emitted when a worker is auto re-spawned.
+
+### reload.complete
+
+Emitted when your cluster process has completed realoding
+
+### exit
+
+Emitted when your process is about to exit
+

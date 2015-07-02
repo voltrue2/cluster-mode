@@ -42,7 +42,9 @@ var shutdownTasks = [];
 // worker map used for master process only
 var workerMap = {};
 
-exports.addShutdownTask = function (task) {
+var ee = new EventEmitter();
+
+ee.addShutdownTask = function (task) {
 
 	if (typeof task !== 'function') {
 		// TODO: log something
@@ -52,7 +54,7 @@ exports.addShutdownTask = function (task) {
 	shutdownTasks.push(task);
 };
 
-exports.start = function (config) {
+ee.start = function (config) {
 
 	if (cluster.isMaster) {
 		// either non-cluster or master
@@ -83,19 +85,21 @@ exports.start = function (config) {
 	start();
 };
 
-exports.isMaster = function () {
+ee.isMaster = function () {
 	if (isMaster && numOfWorkers) {
 		return true;
 	}
 	return false;
 };
 
-exports.isCluster = function () {
+ee.isCluster = function () {
 	if (numOfWorkers) {
 		return true;
 	}
 	return false;
 };
+
+module.exports = ee;
 
 function start() {
 	startListeners();
@@ -116,10 +120,12 @@ function startClusterMode() {
 				startWorker();
 				break;
 		}
+		ee.emit('cluster.ready');
 		return true;
 	}
 	// non cluster mode
 	startListeners();
+	ee.emit('non.cluster.ready');
 	return false;
 }
 
@@ -240,6 +246,7 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 			);
 			return;
 		}
+		ee.emit('auto.spawn');
 		createWorker();
 		logger.info('Auto re-spawned a new worker process');
 	}
@@ -259,7 +266,7 @@ function handleReloading() {
 	if (reloaded === numOfWorkers) {
 		isReloading = false;
 		reloaded = 0;
-		
+		ee.emit('reload.complete');	
 		logger.info('All worker processes have reloaded');
 	}
 }
@@ -375,6 +382,8 @@ function shutdown() {
 		}
 
 		logger.info('Exit: PID - ' + process.pid);
+
+		ee.emit('exit');
 
 		process.exit(code);
 	};
