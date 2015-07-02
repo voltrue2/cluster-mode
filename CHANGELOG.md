@@ -4,9 +4,25 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
-## Version 0.0.1
+## Version 0.0.3
 
-Very first released version. Please refer to README.
+### Added
+
+None
+
+### Changed
+
+##### Minor refactoring of src/proecss.js
+
+##### Improved log output for auto re-apawn of workers
+
+### Deprecated
+
+None
+
+### Removed
+
+None 
 
 ***
 
@@ -29,5 +45,11 @@ None
 ### Removed
 
 None
+
+***
+
+## Version 0.0.1
+
+Very first released version. Please refer to README.
 
 ***

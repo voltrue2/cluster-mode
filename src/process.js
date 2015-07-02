@@ -191,34 +191,17 @@ function handleWorkerExit(worker, code, sig) {
 	}
 	// this is for master process
 	if (!worker.suicide && sig && autoSpawn) {
-		// worker died from an error
-		// auto-respawn the dead worker
-		// if master wants to shutdown, workers don't auto re-spawn
-		if (!isShutdown) {
-			if (Date.now() - workerData.started < MIN_LIFE) {
-				// number of worker process has permanently decreased 
-				numOfWorkers -= 1;
-				logger.error(
-					'A worker process must be alive for at least ' + MIN_LIFE + 'ms ' +
-					'(# of worker: ' + numOfWorkers + ')'
-				);
-				return;
-			}
-			createWorker();
-			logger.info('Auto re-spawned a new worker process');
-		}
+		handleAutoSpawn(worker, workerData, code, sig);
 		return;
 	}
 	// this is for master process
 	if (noMoreWorkers()) {
 		// no more workers and shutting down
 		// or no more workers with code greater than 0
-
 		logger.info(
 			'No more workers running (shutdown: ' + isShutdown +
 			') [code: ' + sigCode.getNameByExitCode(code) + ', ' + code + ']'
 		);
-
 		if (isShutdown || code) {
 			logger.info('All worker processes have gracefully disconnected');
 			shutdown();
@@ -228,6 +211,32 @@ function handleWorkerExit(worker, code, sig) {
 
 	// worker disconnected for exit
 	emitter.emit('workerExit');
+}
+
+function handleAutoSpawn(worker, workerData, code, sig) {
+	// worker died from an error
+	// auto-respawn the dead worker
+	// if master wants to shutdown, workers don't auto re-spawn
+	if (!isShutdown) {
+		logger.error(
+			'A worker process exited unxpectedly (worker: ' +
+			worker.id + ') [pid: ' + workerData.pid + '] [code: ' +
+			sigCode.getNameByExitCode(code) +
+			'] [signal: ' + sig + ']'
+		);
+		if (Date.now() - workerData.started < MIN_LIFE) {
+			// number of worker process has permanently decreased 
+			numOfWorkers -= 1;
+			logger.error(
+				'A worker process must be alive for at least ' + MIN_LIFE + 'ms ' +
+				'(# of worker: ' + numOfWorkers + ')'
+			);
+			return;
+		}
+		createWorker();
+		logger.info('Auto re-spawned a new worker process');
+	}
+	return;
 }
 
 function handleReloading() {
