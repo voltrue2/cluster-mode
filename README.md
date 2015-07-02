@@ -46,9 +46,21 @@ cluster.addShutdownTask(function (cb) {
 });
 ```
 
-### .start(config [Object])
+### .start(config [*Object])
 
 You must invoke this function in order to start your application process.
+
+If you do not pass `config`, `cluster-mode` will fall back to its default settings:
+
+Default
+
+```
+{
+	max: <number of CPU available>,
+	log: null,
+	autoSpawn: false
+}
+```
 
 #### Config Object
 
@@ -60,13 +72,17 @@ You must invoke this function in order to start your application process.
 }
 ```
 
-##### max
+##### max (Required)
 
 This property manages the number of worker processes you want to start with.
 
 **NOTE:** Set this value to `0` to start your application in **non-cluster** mode (no workers).
 
-##### autoSpawn
+##### log (Optional)
+
+`cluster-mode` module supports, `bunyan`, `winston`, `log4js` and `gracelog`.
+
+##### autoSpawn (Optional)
 
 If set to `true`, `cluster-mode` will automatically re-spawn a new worker to take place of the dead worker.
 
@@ -75,3 +91,7 @@ If workers die in less than **10** seconds, however, it will consider, there is 
 ### .isMaster()
 
 Returns `true` if your process is in `cluster-mode` (with workers) **and** a master process.
+
+### .isCluster()
+
+Returns `true` if your process is running with workers.

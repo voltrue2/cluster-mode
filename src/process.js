@@ -90,6 +90,13 @@ exports.isMaster = function () {
 	return false;
 };
 
+exports.isCluster = function () {
+	if (numOfWorkers) {
+		return true;
+	}
+	return false;
+};
+
 function start() {
 	startListeners();
 	var inClusterMode = startClusterMode();

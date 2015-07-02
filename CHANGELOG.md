@@ -8,7 +8,7 @@ This is a list of manually maintained changes and updates for each version.
 
 ### Added
 
-None
+##### .isCluster() added
 
 ### Changed
 
