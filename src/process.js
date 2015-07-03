@@ -115,17 +115,18 @@ function startClusterMode() {
 		switch (cluster.isMaster) {
 			case true:
 				startMaster();
+				ee.emit('cluster.master.ready', process.pid);
 				break;
 			case false:
 				startWorker();
+				ee.emit('cluster.worker.ready', process.pid);
 				break;
 		}
-		ee.emit('cluster.ready');
 		return true;
 	}
 	// non cluster mode
 	startListeners();
-	ee.emit('non.cluster.ready');
+	ee.emit('cluster.non.ready');
 	return false;
 }
 

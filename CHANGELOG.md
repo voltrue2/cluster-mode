@@ -10,7 +10,7 @@ This is a list of manually maintained changes and updates for each version.
 
 ##### Events added
 
-`cluster.ready`, `non.cluster.ready`, `auto.spawn`, `reload.complete`, and `exit` are added.
+`cluster.master.ready`, `cluster.worker.ready`, `cluster.non.ready`, `auto.spawn`, `reload.complete`, and `exit` are added.
 
 ### Changed
 

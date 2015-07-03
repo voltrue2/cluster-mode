@@ -104,11 +104,15 @@ Returns `true` if your process is running with workers.
 
 `cluster-mode` module is also an event emitter.
 
-### cluster.ready
+### cluster.master.ready
 
-Emitted when your cluster process is ready.
+Emitted when your cluster master process is ready.
 
-### non.cluster.ready
+### cluster.worker.ready
+
+Emitted when your cluster worker process is ready.
+
+### cluster.non.ready
 
 Emitted when your non-cluster process is ready
 
