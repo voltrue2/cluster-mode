@@ -108,9 +108,13 @@ Returns `true` if your process is running with workers.
 
 Emitted when your cluster master process is ready.
 
+The callback will be passed the PID of the process.
+
 ### cluster.worker.ready
 
 Emitted when your cluster worker process is ready.
+
+The callback will be passed the PID of the process.
 
 ### cluster.non.ready
 
