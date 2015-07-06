@@ -8,6 +8,10 @@ cluster.on('cluster.non.ready', function () {
 	console.log('READY!!!!');
 });
 
+cluster.on('exit', function () {
+	console.log('EXIT!!!!!');
+});
+
 cluster.addShutdownTask(function (cb) {
 	cb();
 });

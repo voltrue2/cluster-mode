@@ -19,9 +19,10 @@ var SIGNALS = {
 	SIGTERM: 'SIGTERM'
 };
 // reload command
+var PREFIX = 'cLuSToR-mOdE';
 var CMD = {
-	RELOAD: 'reload',
-	EXIT: 'exit'
+	RELOAD: PREFIX + '__reload__',
+	EXIT: PREFIX + '__exit__'
 };
 // minimum lifespan for workers
 // workers must be alive for at least 1 second
