@@ -37,6 +37,8 @@ Task function will recieve 1 argument, a callback function.
 
 It is useful when you need to clean up your application before terminating the prrocess.
 
+**NOTE:** The function returns a boolean. When the function succeeds in adding a new shutdown task function, it returns `true`.
+
 Exmaple:
 
 ```javascript

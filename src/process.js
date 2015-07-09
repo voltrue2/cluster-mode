@@ -48,11 +48,12 @@ var ee = new EventEmitter();
 ee.addShutdownTask = function (task) {
 
 	if (typeof task !== 'function') {
-		// TODO: log something
-		return;
+		return false;
 	}
 
 	shutdownTasks.push(task);
+
+	return true;
 };
 
 ee.start = function (config) {

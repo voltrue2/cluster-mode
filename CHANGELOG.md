@@ -8,13 +8,13 @@ Version 0.0.5
 
 ### Added
 
-#### A new event added
+##### A new event added
 
 `cluster`
 
 ### Changed
 
-None
+##### .addShutdownTask() now returns a boolean
 
 ### Deprecated
 
