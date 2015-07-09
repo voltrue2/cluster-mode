@@ -104,6 +104,18 @@ Returns `true` if your process is running with workers.
 
 `cluster-mode` module is also an event emitter.
 
+### cluster
+
+Emitted when your application process starts.
+
+This event will be called when: master process is ready, worker process is ready or non-cluster process is ready.
+
+When master process is ready,  the callback will recieve two arguments: `pid` and `"master.ready"`.
+
+When worker process is ready,  the callback will recieve two arguments: `pid` and `"worker.ready"`.
+
+When non-cluster process is ready,  the callback will recieve one argument: `"non.ready"`.
+
 ### cluster.master.ready
 
 Emitted when your cluster master process is ready.

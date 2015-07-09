@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.5
+
+### Added
+
+#### A new event added
+
+`cluster`
+
+### Changed
+
+None
+
+### Deprecated
+
+None
+
+### Removed
+
+None
+
+***
+
 ## Version 0.0.4
 
 ### Added
