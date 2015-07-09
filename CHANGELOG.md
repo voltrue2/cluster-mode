@@ -10,11 +10,13 @@ Version 0.0.5
 
 ##### A new event added
 
-`cluster`
+`cluster`, `reload``
 
 ### Changed
 
 ##### .addShutdownTask() now returns a boolean
+
+#### auto.spawn event will pass pid and worker ID to the callback
 
 ### Deprecated
 

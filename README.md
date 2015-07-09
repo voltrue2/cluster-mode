@@ -112,9 +112,9 @@ Emitted when your application process starts.
 
 This event will be called when: master process is ready, worker process is ready or non-cluster process is ready.
 
-When master process is ready,  the callback will recieve two arguments: `pid` and `"master.ready"`.
+When master process is ready,  the callback will recieve two arguments: `"master.ready"` and `pid`.
 
-When worker process is ready,  the callback will recieve two arguments: `pid` and `"worker.ready"`.
+When worker process is ready,  the callback will recieve two arguments: `"worker.ready"` and `pid`.
 
 When non-cluster process is ready,  the callback will recieve one argument: `"non.ready"`.
 
@@ -137,6 +137,22 @@ Emitted when your non-cluster process is ready
 ### auto.spawn
 
 Emitted when a worker is auto re-spawned.
+
+### reload
+
+Emitted when your cluster application is reloading.
+
+When each worker process is reloaded: the callback function will recieve three arguments: `"reloading"`, `pid`, and `worker id`.
+
+When reload is complete: the callback function will recieve one argument: '"complete"'.
+
+### reload.reloading
+
+Emitted when your cluster application is reloading.
+
+The event is emitted on each worker process reload.
+
+Your callback function recieves two arguments: `pid` and `worker id`.
 
 ### reload.complete
 

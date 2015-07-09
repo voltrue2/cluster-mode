@@ -23,6 +23,10 @@ prcs.addShutdownTask(function (cb) {
 	}, 1);
 });
 
+prcs.on('cluster', function (state, pid) {
+	console.log('cluster state:', state, pid);
+});
+
 prcs.on('cluster.non.ready', function () {
 	console.log('----> Event: non cluster is ready!!!');
 });
@@ -33,6 +37,14 @@ prcs.on('cluster.worker.ready', function (pid) {
 
 prcs.on('cluster.master.ready', function (pid) {
 	console.log('----> Event: master process is ready!!!', pid);
+});
+
+prcs.on('auto.spawn', function (pid, id) {
+	console.log('auto-spawned: ', pid, id);
+});
+
+prcs.on('reload', function (state, pid, id) {
+	console.log('reload:', state, pid, id);
 });
 
 prcs.on('exit', function () {

@@ -117,12 +117,12 @@ function startClusterMode() {
 		switch (cluster.isMaster) {
 			case true:
 				startMaster();
-				ee.emit('cluster', process.pid, 'master.ready');
+				ee.emit('cluster', 'master.ready', process.pid);
 				ee.emit('cluster.master.ready', process.pid);
 				break;
 			case false:
 				startWorker();
-				ee.emit('cluster', process.pid, 'worker.ready');
+				ee.emit('cluster', 'worker.ready', process.pid);
 				ee.emit('cluster.worker.ready', process.pid);
 				break;
 		}
@@ -186,6 +186,8 @@ function createWorker() {
 	});
 
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
+
+	return worker;
 }
 
 function handleWorkerExit(worker, code, sig) {
@@ -251,15 +253,15 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 			);
 			return;
 		}
-		ee.emit('auto.spawn');
-		createWorker();
+		var newWorker = createWorker();
 		logger.info('Auto re-spawned a new worker process');
+		ee.emit('auto.spawn', newWorker.process.pid, newWorker.id);
 	}
 	return;
 }
 
 function handleReloading() {
-	createWorker();
+	var worker = createWorker();
 
 	emitter.emit('reloaded');
 	
@@ -267,11 +269,15 @@ function handleReloading() {
 	
 	logger.info('Reloaded a worker process');
 
+	ee.emit('reload', 'reloading', worker.process.pid, worker.id);
+	ee.emit('reload.reloading', worker.pid, worker.id);
+
 	// done and reset
 	if (reloaded === numOfWorkers) {
 		isReloading = false;
 		reloaded = 0;
-		ee.emit('reload.complete');	
+		ee.emit('reload', 'complete');
+		ee.emit('reload.complete');
 		logger.info('All worker processes have reloaded');
 	}
 }
