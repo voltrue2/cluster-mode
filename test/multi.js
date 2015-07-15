@@ -54,5 +54,4 @@ prcs.on('exit', function () {
 prcs.start(config);
 
 setInterval(function () {
-
-}, 10000);
+}, 3000);

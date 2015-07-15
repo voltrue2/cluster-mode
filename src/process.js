@@ -107,7 +107,7 @@ function start() {
 	startListeners();
 	var inClusterMode = startClusterMode();
 	if (isMaster) {
-		logger.info('Staring in cluster mode: ' + inClusterMode);
+		logger.info('Starting in cluster mode: ' + inClusterMode);
 	}
 }
 
@@ -161,12 +161,12 @@ function startMaster() {
 
 	logger.info('Starting master process');
 
+	// set up process termination listener on workers
+	cluster.on('exit', handleWorkerExit);
 	// spawn workers
 	for (var i = 0; i < numOfWorkers; i++) {
 		createWorker();
 	}
-	// set up process termination listener on workers
-	cluster.on('exit', handleWorkerExit);
 }
 
 function createWorker() {
@@ -176,12 +176,12 @@ function createWorker() {
 		started: Date.now(),
 		pid: worker.process.pid
 	};
-	// master to worker message listener
+	// worker to master message listener
 	worker.on('message', function (data) {
 		try {
 			data = JSON.parse(data);
 		} catch (e) {
-			// TODO: do we need to do something here?
+			logger.warn('Message data not JSON:', data);
 		}
 	});
 
@@ -283,27 +283,30 @@ function handleReloading() {
 }
 
 function startWorker() {
-	// set up message lsitener: worker to master
+	// set up message lsitener: master to worker
 	process.on('message', function (data) {
 		try {
 			data = JSON.parse(data);
 		} catch (e) {
-			// TODO: do something here?
+			logger.warn('Message data not JSON:', data);
 		}
+
+		if (!data.command) {
+			// not a command message
+			return;
+		}
+
 		switch (data.command) {
 			case CMD.EXIT:
 				logger.info('Shutting down worker process for exit');
 				shutdown();
-				break;
+				return;
 			case CMD.RELOAD:
 				logger.info('Shutting down worker process for reload');
 				shutdown();
-				break;
+				return;
 			default:
-				logger.error('Unknown command from master process: ' + data.command);
 				break;
-			
-				
 		}
 	});
 
