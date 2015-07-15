@@ -16,6 +16,13 @@ cluster.addShutdownTask(function (cb) {
 	cb();
 });
 
+cluster.addShutdownTask(function (cb) {
+	console.log('wait for 3 seconds');
+	setTimeout(function () {
+		cb();
+	}, 3000);
+});
+
 cluster.start(config);
 
 setInterval(function () {

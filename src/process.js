@@ -25,7 +25,7 @@ var CMD = {
 	EXIT: PREFIX + '__exit__'
 };
 // minimum lifespan for workers
-// workers must be alive for at least 1 second
+// workers must be alive for at least 10 second
 // otherwise it will NOT be auto re-spawn
 var MIN_LIFE = 10000;
 // number of works to start
