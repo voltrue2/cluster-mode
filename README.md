@@ -47,11 +47,14 @@ Exmaple:
 
 ```javascript
 var cluster = require('cluster-mode');
-cluster.addShutdownTask(function (cb) {
+var success = cluster.addShutdownTask(function (cb) {
 	// do what needs to be done
 	// when all is finished, move on to next
 	cb();
 }, false);
+
+// success would be true, if it added the task function
+// false means that is task function will NOT be executed on master process
 ```
 
 ### .start(config [*Object])
