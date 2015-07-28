@@ -4,6 +4,22 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.6
+
+### Added
+
+None
+
+### Changed
+
+#### .addShutdownTask() now has 2nd argument
+
+With the 2nd argument `runOnMaster` set to `false`, the shutdown task function(s) will NOT be executed on master process.
+
+The default is `true`.
+
+***
+
 Version 0.0.5
 
 ### Added

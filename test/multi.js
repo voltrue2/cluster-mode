@@ -14,13 +14,13 @@ var config = {
 prcs.addShutdownTask(function (cb) {
 	setTimeout(function () {
 		cb();
-	}, 1);
-});
+	}, 100);
+}, false);
 
 prcs.addShutdownTask(function (cb) {
 	setTimeout(function () {
 		cb();
-	}, 1);
+	}, 300);
 });
 
 prcs.on('cluster', function (state, pid) {

@@ -29,13 +29,17 @@ cluster.start(config);
 
 Avialable functions of this module.
 
-### .addShutdownTask(task [Function])
+### .addShutdownTask(task [Function], runOnMaster [*Boolean])
 
 Adds a function to be executed before your application process exits.
 
 Task function will recieve 1 argument, a callback function.
 
 It is useful when you need to clean up your application before terminating the prrocess.
+
+If `runOnMaster` is set to `false`, the shutdown task function will **NOT** be executed on master process.
+
+The default value of `runOnMaster` is `true`.
 
 **NOTE:** The function returns a boolean. When the function succeeds in adding a new shutdown task function, it returns `true`.
 

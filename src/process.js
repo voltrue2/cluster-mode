@@ -45,13 +45,18 @@ var workerMap = {};
 
 var ee = new EventEmitter();
 
-ee.addShutdownTask = function (task) {
+ee.addShutdownTask = function (task, runOnMaster) {
 
 	if (typeof task !== 'function') {
 		return false;
 	}
 
-	shutdownTasks.push(task);
+	// default value of runOnMaster is true
+	if (runOnMaster === undefined) {
+		runOnMaster = true;
+	}
+
+	shutdownTasks.push({ task: task, runOnMaster: runOnMaster });
 
 	return true;
 };
@@ -389,6 +394,15 @@ function exit(sig) {
 
 function shutdown() {
 	var counter = 0;
+	var taskList = shutdownTasks.filter(function (item) {
+		if (ee.isMaster()) {
+			// run tasks with runOnMaster=true only on master
+			return item.runOnMaster;
+		} else {
+			// run all tasks
+			return true;
+		}
+	});
 	var done = function (error) {
 		var code = 0;
 		if (error) {
@@ -404,19 +418,19 @@ function shutdown() {
 
 	logger.verbose(
 		'Number of shutdown tasks before shutting down: ' +
-		shutdownTasks.length
+		taskList.length
 	);
 
-	async.eachSeries(shutdownTasks, function (task, next) {
+	async.eachSeries(taskList, function (item, next) {
 
 		counter += 1;
 
 		logger.info(
 			'Execute shutdown task:',
-			counter + ' out of ' + shutdownTasks.length
+			counter + ' out of ' + taskList.length
 		);
 
-		task(next);
+		item.task(next);
 	}, done);
 }
 
