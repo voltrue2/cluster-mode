@@ -18,6 +18,14 @@ With the 2nd argument `runOnMaster` set to `false`, the shutdown task function(s
 
 The default is `true`.
 
+### Deprecated
+
+None
+
+### Removed
+
+None
+
 ***
 
 Version 0.0.5
