@@ -92,6 +92,13 @@ ee.start = function (config) {
 	start();
 };
 
+ee.stop = function (error) {
+	if (error) {
+		logger.error('Exiting the process with an error:', error);
+	}
+	exit(error ? sigCode.CODES.FATAL_ERROR : sigCode.CODES.EXPECTED);
+};
+
 ee.isMaster = function () {
 	if (isMaster && numOfWorkers) {
 		return true;

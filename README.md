@@ -99,6 +99,12 @@ If set to `true`, `cluster-mode` will automatically re-spawn a new worker to tak
 
 If workers die in less than **10** seconds, however, it will consider, there is something wrong with the application and will **NOT** re-spawn a new worker.
 
+### .stop(code)
+
+You must invoke this function to stop the process. 
+
+In cluster, you **MUST** call this in the master process.
+
 ### .isMaster()
 
 Returns `true` if your process is in `cluster-mode` (with workers) **and** a master process.

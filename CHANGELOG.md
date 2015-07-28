@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.7
+
+### Added
+
+#### .stop() added
+
+With `.stop()`, you can stop the process programatically.
+
+### Changed
+
+None
+
+### Deprecated
+
+None
+
+### Removed
+
+None
+
+***
+
 Version 0.0.6
 
 ### Added
