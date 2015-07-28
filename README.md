@@ -51,7 +51,7 @@ cluster.addShutdownTask(function (cb) {
 	// do what needs to be done
 	// when all is finished, move on to next
 	cb();
-});
+}, false);
 ```
 
 ### .start(config [*Object])
