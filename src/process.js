@@ -263,7 +263,6 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 			return;
 		}
 		var newWorker = createWorker();
-		logger.info('Auto re-spawned a new worker process');
 		ee.emit('auto.spawn', newWorker.process.pid, newWorker.id);
 	} else {
 		logger.info(
@@ -281,7 +280,10 @@ function handleReloading() {
 	
 	reloaded += 1;
 	
-	logger.info('Reloaded a worker process');
+	logger.info(
+		'Reloaded a worker process (ID: ' +
+		worker.id + ') [pid: ' + worker.process.pid + ']'
+	);
 
 	ee.emit('reload', 'reloading', worker.process.pid, worker.id);
 	ee.emit('reload.reloading', worker.pid, worker.id);

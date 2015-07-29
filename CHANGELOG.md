@@ -14,6 +14,8 @@ None
 
 #### BUG fix: Auto-respawning now works without signaled exit
 
+#### Default logging now has timestamp
+
 #### .stop() improved error logging
 
 #### Exit code mapping improved
