@@ -6,9 +6,8 @@ var logger;
 //var logger = require('gracelog').create('test');
 
 var config = {
-	max: 4,
-	logger: logger,
-	autoSpawn: true
+	max: 0,
+	logger: logger
 };
 
 prcs.addShutdownTask(function (cb) {
@@ -52,6 +51,12 @@ prcs.on('exit', function (code, sig) {
 });
 
 prcs.start(config);
+
+
+setTimeout(function () {
+	console.log('stop the process');
+	prcs.stop(new Error('TestError'));
+}, 5000);
 
 setInterval(function () {
 }, 3000);

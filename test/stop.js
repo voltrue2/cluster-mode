@@ -53,5 +53,11 @@ prcs.on('exit', function (code, sig) {
 
 prcs.start(config);
 
+
+setTimeout(function () {
+	console.log('stop the process');
+	prcs.stop();
+}, 5000);
+
 setInterval(function () {
 }, 3000);

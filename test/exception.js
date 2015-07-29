@@ -53,5 +53,13 @@ prcs.on('exit', function (code, sig) {
 
 prcs.start(config);
 
+
+if (!prcs.isMaster()) {
+	setTimeout(function () {
+		console.error('die in 5 seconds');
+		throw new Error('exception and die...');
+	}, 5000);
+}
+
 setInterval(function () {
 }, 3000);

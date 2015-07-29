@@ -99,11 +99,13 @@ If set to `true`, `cluster-mode` will automatically re-spawn a new worker to tak
 
 If workers die in less than **10** seconds, however, it will consider, there is something wrong with the application and will **NOT** re-spawn a new worker.
 
-### .stop(code)
+### .stop(error [*Error Object])
 
 You must invoke this function to stop the process. 
 
 In cluster, you **MUST** call this in the master process.
+
+**NOTE:** If an error object is passed, cluster-module will log an error log and terminates the process with `FATAL ERROR`.
 
 ### .isMaster()
 
@@ -145,7 +147,7 @@ The callback will be passed the PID of the process.
 
 ### cluster.non.ready
 
-Emitted when your non-cluster process is ready
+Emitted when your non-cluster process is ready.
 
 ### auto.spawn
 
@@ -169,9 +171,17 @@ Your callback function recieves two arguments: `pid` and `worker id`.
 
 ### reload.complete
 
-Emitted when your cluster process has completed realoding
+Emitted when your cluster process has completed realoding.
 
 ### exit
 
-Emitted when your process is about to exit
+Emitted when your process is about to exit.
+
+The callback of this event will recieve two arguments: `code` and `signal`.
+
+`code`: 0 for expected exit and 1 for exiting with an error.
+
+`signal`: If the process is exiting by a signal such as `SIGINT`.
+
+**NOTE:** Catching this event does **NOT** prevent the process from exiting.
 

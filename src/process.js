@@ -93,10 +93,7 @@ ee.start = function (config) {
 };
 
 ee.stop = function (error) {
-	if (error) {
-		logger.error('Exiting the process with an error:', error);
-	}
-	exit(error ? sigCode.CODES.FATAL_ERROR : sigCode.CODES.EXPECTED);
+	exit(error, error ? sigCode.CODES.FATAL_ERROR : sigCode.CODES.EXPECTED);
 };
 
 ee.isMaster = function () {
@@ -152,19 +149,19 @@ function startListeners() {
 
 	process.on(SIGNALS.SIGHUP, reload);
 	process.on(SIGNALS.SIGINT, function () {
-		exit(SIGNALS.SIGINT);
+		exit(null, SIGNALS.SIGINT);
 	});
 	process.on(SIGNALS.SIGQUIT, function () {
-		exit(SIGNALS.SIGQUIT);
+		exit(null, SIGNALS.SIGQUIT);
 	});
 	process.on(SIGNALS.SIGTERM, function () {
-		exit(SIGNALS.SIGTERM);
+		exit(null, SIGNALS.SIGTERM);
 	});
 	process.on('exit', function (code) {
 		if (code) {
 			// some kind of error
 			var errorName = sigCode.getNameByExitCode(code);
-			logger.error('Error termination: (code: ' + code + ')', errorName);
+			logger.error('Error termination: (code: ' + code + ') ' + errorName);
 		}
 	});
 }
@@ -235,7 +232,7 @@ function handleWorkerExit(worker, code, sig) {
 			') [code: ' + sigCode.getNameByExitCode(code) + ', ' + code + ']'
 		);
 		if (isShutdown || code) {
-			logger.info('All worker processes have gracefully disconnected');
+			logger.info('All worker processes have disconnected');
 			shutdown();
 		}
 		return;
@@ -356,17 +353,25 @@ function reload() {
 	}
 }
 
-function exit(sig) {
+function exit(errorExit, sig) {
 
 	if (!isMaster) {
 		// this is master only
 		return;
 	}
-
-	logger.info(
-		'Exiting [signal: ' + sig + '] (# of workers: ' +
-		Object.keys(cluster.workers).length + ')'
-	);
+	
+	if (errorExit) {
+		logger.error(
+			'Exiting with an error [signal: ' + sig +
+			' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
+			Object.keys(cluster.workers).length + '): ' + (errorExit.stack || null)
+		);
+	} else {
+		logger.info(
+			'Exiting [signal: ' + sig + ' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
+			Object.keys(cluster.workers).length + ')'
+		);
+	}
 
 	if (numOfWorkers && cluster.isMaster) {
 		// master will wait for all workers to exit
@@ -377,7 +382,7 @@ function exit(sig) {
 
 			logger.info('Master is exiting');
 
-			shutdown();
+			shutdown(sig);
 			return;
 		}
 		// there are more workers
@@ -389,17 +394,17 @@ function exit(sig) {
 				'Instruct worker process to exit: ' +
 				'(worker: ' + id + ') '
 			);
-			msg.send({ command: CMD.EXIT }, cluster.workers[id]);
+			msg.send({ command: CMD.EXIT, error: errorExit }, cluster.workers[id]);
 		});
 		return;
 	}
 	// we don't have workers to begin with
 	if (!numOfWorkers) {
-		shutdown();
+		shutdown(errorExit, sig);
 	}
 }
 
-function shutdown() {
+function shutdown(errorShutdown, sig) {
 	var counter = 0;
 	var taskList = shutdownTasks.filter(function (item) {
 		if (ee.isMaster()) {
@@ -418,7 +423,7 @@ function shutdown() {
 
 		logger.info('Exit: PID - ' + process.pid);
 
-		ee.emit('exit');
+		ee.emit('exit', code, sig || null);
 
 		process.exit(code);
 	};

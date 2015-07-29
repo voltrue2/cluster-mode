@@ -4,6 +4,30 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.8
+
+### Added
+
+None
+
+### Changed
+
+#### .stop() improved error logging
+
+#### Exit code mapping improved
+
+#### Private function .exit() now recieves an error
+
+### Deprecated
+
+None
+
+### Removed
+
+None
+
+***
+
 Version 0.0.7
 
 ### Added
