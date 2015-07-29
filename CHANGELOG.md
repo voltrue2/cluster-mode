@@ -12,6 +12,8 @@ None
 
 ### Changed
 
+#### BUG fix: Auto-respawning now works without signaled exit
+
 #### .stop() improved error logging
 
 #### Exit code mapping improved

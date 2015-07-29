@@ -219,9 +219,8 @@ function handleWorkerExit(worker, code, sig) {
 		return;
 	}
 	// this is for master process
-	if (!worker.suicide && sig && autoSpawn) {
+	if (!worker.suicide && autoSpawn) {
 		handleAutoSpawn(worker, workerData, code, sig);
-		return;
 	}
 	// this is for master process
 	if (noMoreWorkers()) {
@@ -233,7 +232,7 @@ function handleWorkerExit(worker, code, sig) {
 		);
 		if (isShutdown || code) {
 			logger.info('All worker processes have disconnected');
-			shutdown();
+			shutdown(null, code);
 		}
 		return;
 	}
@@ -258,13 +257,19 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 			numOfWorkers -= 1;
 			logger.error(
 				'A worker process must be alive for at least ' + MIN_LIFE + 'ms ' +
-				'(# of worker: ' + numOfWorkers + ')'
+				' (ID: ' + worker.id + ') [pid: ' + worker.process.pid + ']' +
+				'(# of worker: ' + numOfWorkers + '): no auto-respawning'
 			);
 			return;
 		}
 		var newWorker = createWorker();
 		logger.info('Auto re-spawned a new worker process');
 		ee.emit('auto.spawn', newWorker.process.pid, newWorker.id);
+	} else {
+		logger.info(
+			'Master process is instructing to shutdown (ID: ' + worker.id + ') [pid: ' +
+			worker.process.pid + ']: no auto-respawning'
+		);
 	}
 	return;
 }
