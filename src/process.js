@@ -36,6 +36,7 @@ var autoSpawn = false;
 var isReloading = false;
 var isShutdown = false;
 var isMaster = false;
+var shutdownLock = false;
 // counter
 var reloaded = 0;
 // shutdown tasks to be executed before shutting down
@@ -366,6 +367,16 @@ function exit(errorExit, sig) {
 		// this is master only
 		return;
 	}
+
+	if (shutdownLock) {
+		logger.warn('Process is already shutting down: This exit instruction is ignored');
+		if (errorExit) {
+			logger.error('Exit instruction by error:' + errorExit.message + '\n' + errorExit.stack);
+		}
+		return;
+	}
+
+	shutdownLock = true;
 	
 	if (errorExit) {
 		logger.error(

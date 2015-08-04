@@ -4,6 +4,26 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.9
+
+### Added
+
+#### Shutting down steps now ignores multiple exit instructions while shutting down
+
+### Changed
+
+None
+
+### Deprecated
+
+None
+
+### Removed
+
+None
+
+***
+
 Version 0.0.8
 
 ### Added
