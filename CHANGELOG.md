@@ -12,7 +12,7 @@ Version 0.0.9
 
 ### Changed
 
-None
+#### Logging added warn
 
 ### Deprecated
 
