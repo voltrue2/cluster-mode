@@ -6,19 +6,19 @@ This is a list of manually maintained changes and updates for each version.
 
 Version 0.0.9
 
-### Added
+## Added
 
 #### Shutting down steps now ignores multiple exit instructions while shutting down
 
-### Changed
+## Changed
 
 #### Logging added warn
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -26,11 +26,11 @@ None
 
 Version 0.0.8
 
-### Added
+## Added
 
 None
 
-### Changed
+## Changed
 
 #### BUG fix: Auto-respawning now works without signaled exit
 
@@ -42,11 +42,11 @@ None
 
 #### Private function .exit() now recieves an error
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -54,21 +54,21 @@ None
 
 Version 0.0.7
 
-### Added
+## Added
 
 #### .stop() added
 
 With `.stop()`, you can stop the process programatically.
 
-### Changed
+## Changed
 
 None
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -76,11 +76,11 @@ None
 
 Version 0.0.6
 
-### Added
+## Added
 
 None
 
-### Changed
+## Changed
 
 #### .addShutdownTask() now has 2nd argument
 
@@ -88,11 +88,11 @@ With the 2nd argument `runOnMaster` set to `false`, the shutdown task function(s
 
 The default is `true`.
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -100,23 +100,23 @@ None
 
 Version 0.0.5
 
-### Added
+## Added
 
 ##### A new event added
 
 `cluster`, `reload``
 
-### Changed
+## Changed
 
 ##### .addShutdownTask() now returns a boolean
 
 #### auto.spawn event will pass pid and worker ID to the callback
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -124,21 +124,21 @@ None
 
 ## Version 0.0.4
 
-### Added
+## Added
 
 ##### Events added
 
 `cluster.master.ready`, `cluster.worker.ready`, `cluster.non.ready`, `auto.spawn`, `reload.complete`, and `exit` are added.
 
-### Changed
+## Changed
 
 None
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
@@ -146,21 +146,21 @@ None
 
 ## Version 0.0.3
 
-### Added
+## Added
 
 ##### .isCluster() added
 
-### Changed
+## Changed
 
 ##### Minor refactoring of src/proecss.js
 
 ##### Improved log output for auto re-apawn of workers
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None 
 
@@ -168,21 +168,21 @@ None
 
 ## Version 0.0.2
 
-### Added
+## Added
 
 None
 
-### Changed
+## Changed
 
 ##### autoSpawn now has minimum required worker life time for auto re-spawn
 
 In cluster mode w/ autoSpawn = true: a worker dies in less than 10 seconds -> reload application process w/ SIGHUP -> terminate application process -> the application process does not die.
 
-### Deprecated
+## Deprecated
 
 None
 
-### Removed
+## Removed
 
 None
 
