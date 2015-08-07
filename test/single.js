@@ -27,4 +27,6 @@ cluster.start(config);
 
 setInterval(function () {
 
+	console.log('worker map should be empty:', cluster.getWorkers());
+
 }, 10000);

@@ -22,7 +22,8 @@ var SIGNALS = {
 var PREFIX = 'cLuSToR-mOdE';
 var CMD = {
 	RELOAD: PREFIX + '__reload__',
-	EXIT: PREFIX + '__exit__'
+	EXIT: PREFIX + '__exit__',
+	SYNC: PREFIX + '__sync__'
 };
 // minimum lifespan for workers
 // workers must be alive for at least 10 second
@@ -41,7 +42,7 @@ var shutdownLock = false;
 var reloaded = 0;
 // shutdown tasks to be executed before shutting down
 var shutdownTasks = [];
-// worker map used for master process only
+// worker map used for master process only, but synced from master to workers
 var workerMap = {};
 
 var ee = new EventEmitter();
@@ -91,6 +92,17 @@ ee.start = function (config) {
 
 	// start cluster process
 	start();
+};
+
+ee.getWorkers = function () {
+	var map = {};
+	for (var id in workerMap) {
+		map[id] = {
+			pid: workerMap[id].pid,
+			started: workerMap[id].started
+		};
+	}
+	return map;
 };
 
 ee.stop = function (error) {
@@ -197,6 +209,9 @@ function createWorker() {
 
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
 
+	// sync worker map with all workers
+	msg.send({ command: CMD.SYNC, map: workerMap });
+
 	return worker;
 }
 
@@ -213,6 +228,9 @@ function handleWorkerExit(worker, code, sig) {
 	var workerData = workerMap[worker.id];
 	// remove from the map
 	delete workerMap[worker.id];
+	
+	// sync worker map with all workers
+	msg.send({ command: CMD.SYNC, map: workerMap });
 
 	// this is for master process
 	if (isReloading) {
@@ -321,6 +339,11 @@ function startWorker() {
 			case CMD.RELOAD:
 				logger.info('Shutting down worker process for reload');
 				shutdown();
+				return;
+			case CMD.SYNC:
+				logger.info('Synchronize worker map');
+				logger.verbose('synched map:', data.map);
+				workerMap = data.map;
 				return;
 			default:
 				break;

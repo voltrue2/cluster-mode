@@ -115,6 +115,12 @@ Returns `true` if your process is in `cluster-mode` (with workers) **and** a mas
 
 Returns `true` if your process is running with workers.
 
+### .getWorkres()
+
+Returns a map of all available workers.
+
+The keys of the map are worker IDs.
+
 ***
 
 ## Events

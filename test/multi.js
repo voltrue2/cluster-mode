@@ -54,4 +54,7 @@ prcs.on('exit', function (code, sig) {
 prcs.start(config);
 
 setInterval(function () {
-}, 3000);
+
+	console.log('get worker map:', prcs.getWorkers());	
+
+}, 20000);

@@ -8,6 +8,8 @@ Version 0.0.9
 
 ## Added
 
+#### .getWorkers() added
+
 #### Shutting down steps now ignores multiple exit instructions while shutting down
 
 ## Changed
