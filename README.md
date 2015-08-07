@@ -121,6 +121,8 @@ Returns a map of all available workers.
 
 The keys of the map are worker IDs.
 
+**NOTE:** The map is synchronized from master process asynchronously.
+
 ***
 
 ## Events
