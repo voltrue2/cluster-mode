@@ -125,6 +125,8 @@ Returns `true` if your process is running with workers.
 
 ### .getWorkres()
 
+If `sync` option in configuration object for `.start()` is `true`, It will return the worker map, but if it is `false`, it will return an empty object.
+
 Returns a map of all available workers.
 
 The keys of the map are worker IDs.

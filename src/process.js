@@ -87,11 +87,12 @@ ee.start = function (config) {
 	// auto re-spawn dead workers or not
 	autoSpawn = config.autoSpawn || false;
 	// sync worker: default is true
-	syncWorker = config.sync || true;
+	syncWorker = config.sync;
 
 	if (isMaster) {
 		logger.info('Number of workers: ' + numOfWorkers);
 		logger.info('Auto re-spawn: ' + autoSpawn);
+		logger.info('Synchronaize worker map: ' + syncWorker);
 	}
 
 	// start cluster process
@@ -226,7 +227,7 @@ function createWorker() {
 
 function syncWorkerMap() {
 	if (syncWorker) {
-		logger.verbose('synchronize worker map');
+		logger.verbose('Dispatch synchronize worker command');
 		msg.send({ command: CMD.SYNC, map: workerMap });
 	}
 }
@@ -270,7 +271,7 @@ function handleWorkerExit(worker, code, sig) {
 	}
 	
 	// sync worker map with all workers
-	msg.send({ command: CMD.SYNC, map: workerMap });
+	syncWorkerMap();
 
 	// worker disconnected for exit
 	emitter.emit('workerExit');

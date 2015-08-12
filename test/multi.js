@@ -8,7 +8,8 @@ var logger;
 var config = {
 	max: 4,
 	logger: logger,
-	autoSpawn: true
+	autoSpawn: true,
+	sync: true
 };
 
 prcs.addShutdownTask(function (cb) {
