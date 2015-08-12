@@ -10,6 +10,12 @@ Version 0.0.10
 
 #### sync event added
 
+Emitted when worker map is synced.
+
+The callback will be passed the worker map (Same map as .getWorkers() would return).
+
+**NOTE:** If `sync` option is set to `false` in the configuration object for `.start()`, the event will NOT be emitted.
+
 #### syncWorker flag added to configuration object for .start()
 
 ## Changed
