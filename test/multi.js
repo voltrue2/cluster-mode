@@ -24,6 +24,10 @@ prcs.addShutdownTask(function (cb) {
 	}, 300);
 });
 
+prcs.on('message', function (msg) {
+	console.log('---------------------> message received:', msg);
+});
+
 prcs.on('sync', function (map) {
 	console.log('-------------------------------');
 	console.log('sync event caught:', map);
@@ -62,6 +66,12 @@ prcs.start(config);
 
 setInterval(function () {
 
-	console.log('get worker map:', prcs.getWorkers());	
+	var map = prcs.getWorkers();
+
+	console.log('get worker map:', map);	
+
+	for (var id in map) {
+		prcs.send(id, { msg: 'HELLO', time: Date.now() });
+	}
 
 }, 20000);

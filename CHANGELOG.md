@@ -8,6 +8,37 @@ Version 0.0.10
 
 ## Added
 
+#### .send() added
+
+Sends a message object to a specific worker process.
+
+The sent message can be caught by `message` event in the targeted worker process.
+
+#### message event added
+
+The event is emitted when the process recieves a message object from another cluster process by `.send()`.
+
+The callback will be passed the message object.
+
+Message Object Structure:
+
+```
+{
+        from: <worker ID>/<string "master">
+        msg: <message data>
+}
+```
+
+Example Code:
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.on('message', function (data) {
+        console.log('message was sent from', data.from);
+        console.log('sent message is', data.msg);
+});
+```
+
 #### sync event added
 
 Emitted when worker map is synced.
@@ -40,8 +71,6 @@ None
 ## Removed
 
 None
-
-***
 
 ***
 

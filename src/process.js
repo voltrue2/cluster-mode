@@ -23,8 +23,11 @@ var PREFIX = 'cLuSToR-mOdE';
 var CMD = {
 	RELOAD: PREFIX + '__reload__',
 	EXIT: PREFIX + '__exit__',
-	SYNC: PREFIX + '__sync__'
+	SYNC: PREFIX + '__sync__',
+	MSG: PREFIX + '__msg__'
 };
+// master name
+var MASTER = 'master';
 // minimum lifespan for workers
 // workers must be alive for at least 10 second
 // otherwise it will NOT be auto re-spawn
@@ -133,6 +136,37 @@ ee.isCluster = function () {
 	return false;
 };
 
+ee.send = function (workerId, msgData) {
+	var data = {
+		command: CMD.MSG,
+		targetWorkerId: workerId,
+		msg: msgData,
+		from: null,
+		pid: process.pid
+	};
+
+	if (isMaster) {
+		var targetWorker = cluster.workers[workerId];		
+
+		if (!targetWorker) {
+			logger.error(
+				'Message target worker [ID: ' + workerId +
+				'] no longer exists'
+			);
+			return false;
+		}
+
+		data.from = MASTER;
+
+		msg.send(data, cluster.workers[workerId]);
+		return true;
+	}
+
+	data.from = cluster.worker.id;
+
+	msg.send(data, null);
+};
+
 module.exports = ee;
 
 function start() {
@@ -209,11 +243,48 @@ function createWorker() {
 		pid: worker.process.pid
 	};
 	// worker to master message listener
+	// this is a listener created in master process to listen
+	// to the messages sent from a worker to master
 	worker.on('message', function (data) {
 		try {
 			data = JSON.parse(data);
 		} catch (e) {
 			logger.warn('Message data not JSON:', data);
+		}
+		switch (data.command) {
+			case CMD.MSG:
+				// pass the message to the target worker
+				var targetWorker = cluster.workers[data.targetWorkerId];
+
+				if (!targetWorker) {
+					logger.error(
+						'Message target worker [ID: ' + data.targetWorkerId +
+						'] no longer exists'
+					);
+					return;
+				}
+
+				if (targetWorker.id === worker.id) {
+					// ignore message to itself
+					return;
+				}
+				
+				logger.verbose(
+					'Relay message to worker [' + targetWorker.id + ']' +
+					' from worker [' + data.from + '] via master:',
+					data.msg 
+				);
+
+				var relayedData = {
+					command: CMD.MSG,
+					from: data.from,
+					pid: data.pid,
+					msg: data.msg
+				};
+				msg.send(relayedData, cluster.workers[data.targetWorkerId]);
+				break;
+			default:
+				break;
 		}
 	});
 
@@ -363,6 +434,9 @@ function startWorker() {
 				workerMap = data.map;
 				ee.emit('sync', workerMap);
 				return;
+			case CMD.MSG:
+				ee.emit('message', { from: data.from, msg: data.msg });
+				break;
 			default:
 				break;
 		}

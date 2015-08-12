@@ -133,6 +133,12 @@ The keys of the map are worker IDs.
 
 **NOTE:** The map is synchronized from master process asynchronously.
 
+### .send(workerId [number], message [object])
+
+Sends a message object to a specific worker process.
+
+The sent message can be caught by `message` event in the targeted worker process.
+
 ***
 
 ## Events
@@ -198,6 +204,31 @@ Your callback function recieves two arguments: `pid` and `worker id`.
 ### reload.complete
 
 Emitted when your cluster process has completed realoding.
+
+### message
+
+The event is emitted when the process recieves a message object from another cluster process by `.send()`.
+
+The callback will be passed the message object.
+
+Message Object Structure:
+
+```
+{
+	from: <worker ID>/<string "master">
+	msg: <message data>
+}
+```
+
+Example Code:
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.on('message', function (data) {
+	console.log('message was sent from', data.from);
+	console.log('sent message is', data.msg);
+});
+```
 
 ### exit
 
