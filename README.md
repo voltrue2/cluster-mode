@@ -123,7 +123,7 @@ Returns `true` if your process is in `cluster-mode` (with workers) **and** a mas
 
 Returns `true` if your process is running with workers.
 
-### .getWorkres()
+### .getWorkers()
 
 If `sync` option in configuration object for `.start()` is `true`, It will return the worker map, but if it is `false`, it will return an empty object.
 
