@@ -87,7 +87,7 @@ ee.start = function (config) {
 	// auto re-spawn dead workers or not
 	autoSpawn = config.autoSpawn || false;
 	// sync worker: default is true
-	syncWorker = config.sync;
+	syncWorker = config.sync === undefined ? true : false;
 
 	if (isMaster) {
 		logger.info('Number of workers: ' + numOfWorkers);
@@ -294,7 +294,7 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 			logger.error(
 				'A worker process must be alive for at least ' + MIN_LIFE + 'ms ' +
 				' (ID: ' + worker.id + ') [pid: ' + worker.process.pid + ']' +
-				'(# of worker: ' + numOfWorkers + '): no auto-respawning'
+				'(# of worker: ' + numOfWorkers + '): auto-respawning ignored'
 			);
 			return;
 		}
