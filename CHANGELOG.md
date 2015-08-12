@@ -16,7 +16,18 @@ The callback will be passed the worker map (Same map as .getWorkers() would retu
 
 **NOTE:** If `sync` option is set to `false` in the configuration object for `.start()`, the event will NOT be emitted.
 
-#### syncWorker flag added to configuration object for .start()
+#### sync flag added to configuration object for .start()
+
+*Default Configurations**
+
+```
+{
+        max: <number of CPU available>,
+        log: null,
+        autoSpawn: false,
+        sync: true
+}
+```
 
 ## Changed
 
