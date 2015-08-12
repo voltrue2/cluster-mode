@@ -18,7 +18,7 @@ The callback will be passed the worker map (Same map as .getWorkers() would retu
 
 #### sync flag added to configuration object for .start()
 
-*Default Configurations**
+**Default Configurations**
 
 ```
 {
