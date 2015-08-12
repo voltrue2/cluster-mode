@@ -8,6 +8,8 @@ Version 0.0.10
 
 ## Added
 
+#### sync event added
+
 #### syncWorker flag added to configuration object for .start()
 
 ## Changed

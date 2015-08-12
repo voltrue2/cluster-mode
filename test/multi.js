@@ -24,6 +24,12 @@ prcs.addShutdownTask(function (cb) {
 	}, 300);
 });
 
+prcs.on('sync', function (map) {
+	console.log('-------------------------------');
+	console.log('sync event caught:', map);
+	console.log('-------------------------------');
+});
+
 prcs.on('cluster', function (state, pid) {
 	console.log('cluster state:', state, pid);
 });

@@ -167,6 +167,14 @@ The callback will be passed the PID of the process.
 
 Emitted when your non-cluster process is ready.
 
+### sync
+
+Emitted when worker map is synced.
+
+The callback will be passed the worker map (Same map as .getWorkers() would return).
+
+**NOTE:** If `sync` option is set to `false` in the configuration object for `.start()`, the event will NOT be emitted.
+
 ### auto.spawn
 
 Emitted when a worker is auto re-spawned.

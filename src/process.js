@@ -87,7 +87,7 @@ ee.start = function (config) {
 	// auto re-spawn dead workers or not
 	autoSpawn = config.autoSpawn || false;
 	// sync worker: default is true
-	syncWorker = config.sync === undefined ? true : false;
+	syncWorker = config.sync === undefined || config.sync === true ? true : false;
 
 	if (isMaster) {
 		logger.info('Number of workers: ' + numOfWorkers);
@@ -361,6 +361,7 @@ function startWorker() {
 				logger.info('Synchronize worker map');
 				logger.verbose('synched map:', data.map);
 				workerMap = data.map;
+				ee.emit('sync', workerMap);
 				return;
 			default:
 				break;
