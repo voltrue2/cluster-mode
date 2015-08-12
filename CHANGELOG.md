@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.10
+
+## Added
+
+#### syncWorker flag added to configuration object for .start()
+
+## Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
+***
+
 Version 0.0.9
 
 ## Added

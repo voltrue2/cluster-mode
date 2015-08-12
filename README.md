@@ -63,13 +63,14 @@ You must invoke this function in order to start your application process.
 
 If you do not pass `config`, `cluster-mode` will fall back to its default settings:
 
-Default
+**Default**
 
 ```
 {
 	max: <number of CPU available>,
 	log: null,
-	autoSpawn: false
+	autoSpawn: false,
+	sync: true
 }
 ```
 
@@ -80,6 +81,7 @@ Default
 	max: <number> // max number of worker processes to spawn
 	log: <object> // logging module object. cluster-mode supports bunyan, winston, log4js, and gracelog
 	autoSpawn: <boolean> // automatically re-spawn dead worker processes
+	sync: <boolean> // synchronize worker map: default is true
 }
 ```
 
@@ -98,6 +100,12 @@ This property manages the number of worker processes you want to start with.
 If set to `true`, `cluster-mode` will automatically re-spawn a new worker to take place of the dead worker.
 
 If workers die in less than **10** seconds, however, it will consider, there is something wrong with the application and will **NOT** re-spawn a new worker.
+
+##### sync (Optional)
+
+A boolean flag to turn on/off auto-synchronization of worker map among all worker processes.
+
+The default is `true`.
 
 ### .stop(error [*Error Object])
 

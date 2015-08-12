@@ -33,6 +33,8 @@ var MIN_LIFE = 10000;
 var numOfWorkers = 0;
 // auto respawn workers when they die
 var autoSpawn = false;
+// sync worker on/off
+var syncWorker = true;
 // flags
 var isReloading = false;
 var isShutdown = false;
@@ -84,6 +86,8 @@ ee.start = function (config) {
 	numOfWorkers = (config.max === 0) ? 0 : config.max || MAX;
 	// auto re-spawn dead workers or not
 	autoSpawn = config.autoSpawn || false;
+	// sync worker: default is true
+	syncWorker = config.sync || true;
 
 	if (isMaster) {
 		logger.info('Number of workers: ' + numOfWorkers);
@@ -95,6 +99,11 @@ ee.start = function (config) {
 };
 
 ee.getWorkers = function () {
+
+	if (!syncWorker) {
+		return {};
+	}
+
 	var map = {};
 	for (var id in workerMap) {
 		map[id] = {
@@ -210,9 +219,16 @@ function createWorker() {
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
 
 	// sync worker map with all workers
-	msg.send({ command: CMD.SYNC, map: workerMap });
+	syncWorkerMap();
 
 	return worker;
+}
+
+function syncWorkerMap() {
+	if (syncWorker) {
+		logger.verbose('synchronize worker map');
+		msg.send({ command: CMD.SYNC, map: workerMap });
+	}
 }
 
 function handleWorkerExit(worker, code, sig) {
@@ -228,9 +244,6 @@ function handleWorkerExit(worker, code, sig) {
 	var workerData = workerMap[worker.id];
 	// remove from the map
 	delete workerMap[worker.id];
-	
-	// sync worker map with all workers
-	msg.send({ command: CMD.SYNC, map: workerMap });
 
 	// this is for master process
 	if (isReloading) {
@@ -255,6 +268,9 @@ function handleWorkerExit(worker, code, sig) {
 		}
 		return;
 	}
+	
+	// sync worker map with all workers
+	msg.send({ command: CMD.SYNC, map: workerMap });
 
 	// worker disconnected for exit
 	emitter.emit('workerExit');
