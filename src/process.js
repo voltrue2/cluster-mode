@@ -92,6 +92,11 @@ ee.start = function (config) {
 	// sync worker: default is true
 	syncWorker = config.sync === undefined || config.sync === true ? true : false;
 
+	// if we are running in non-cluster mode, turn off syncWorker
+	if (!ee.isCluster()) {
+		syncWorker = false;
+	}
+
 	if (isMaster) {
 		logger.info('Number of workers: ' + numOfWorkers);
 		logger.info('Auto re-spawn: ' + autoSpawn);
@@ -116,6 +121,34 @@ ee.getWorkers = function () {
 		};
 	}
 	return map;
+};
+
+ee.getWorkerIdByPid = function (pid) {
+	
+	if (!syncWorker) {
+		return null;
+	}
+
+	for (var id in workerMap) {
+		if (pid === workerMap[id].pid) {
+			return id;
+		}
+	}
+
+	return null;
+};
+
+ee.getWorkerPidById = function (id) {
+	
+	if (!syncWorker) {
+		return null;
+	}
+
+	if (workerMap[id]) {
+		return workerMap[id].pid;
+	}
+
+	return null;
 };
 
 ee.stop = function (error) {
@@ -165,6 +198,7 @@ ee.send = function (workerId, msgData) {
 	data.from = cluster.worker.id;
 
 	msg.send(data, null);
+	return true;
 };
 
 module.exports = ee;

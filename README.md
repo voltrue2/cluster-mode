@@ -139,6 +139,22 @@ Sends a message object to a specific worker process.
 
 The sent message can be caught by `message` event in the targeted worker process.
 
+### .getWorkerIdByPid(pid [number])
+
+Returns the pid of a worker by the pid(process ID) given.
+
+If invalid pid is given, the function will return `null`.
+
+**NOTE:** If `sync` of the configuration is `false`, the function returns `null`.
+
+### .getWorkerPidById(workerId [number])
+
+Returns the pid (process ID) of a worker by the ID (worker ID) given.
+
+If invalid ID is given, the function will return `null`.
+
+**NOTE:** If `sync` of the configuration is `false`, the function returns `null`.
+
 ***
 
 ## Events

@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.11
+
+## Added
+
+#### .getWorkerIdByPid() added
+
+#### .getWorerPidById() added
+
+## Changed
+
+None
+
+#### The value of sync in configuration object will always be false if run in non-cluster
+
+None
+
+## Removed
+
+None
+
+***
+
 Version 0.0.10
 
 ## Added
