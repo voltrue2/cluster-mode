@@ -388,7 +388,7 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 	// if master wants to shutdown, workers don't auto re-spawn
 	if (!isShutdown) {
 		logger.error(
-			'A worker process exited unxpectedly (worker: ' +
+			'A worker process exited unexpectedly (worker: ' +
 			worker.id + ') [pid: ' + workerData.pid + '] [code: ' +
 			sigCode.getNameByExitCode(code) +
 			'] [signal: ' + sig + ']'
