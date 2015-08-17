@@ -14,9 +14,9 @@ Version 0.0.11
 
 ## Changed
 
-None
-
 #### The value of sync in configuration object will always be false if run in non-cluster
+
+## Deprecated
 
 None
 
