@@ -4,6 +4,26 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.0.12
+
+## Added
+
+None
+
+## Changed
+
+#### Minor Refactoring in src/process.js and lib/msg.js
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 Version 0.0.11
 
 ## Added

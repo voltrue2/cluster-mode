@@ -18,6 +18,8 @@ var SIGNALS = {
 	SIGQUIT: 'SIGQUIT',
 	SIGTERM: 'SIGTERM'
 };
+// master name
+var MASTER = 'master';
 // reload command
 var PREFIX = 'cLuSToR-mOdE';
 var CMD = {
@@ -26,8 +28,6 @@ var CMD = {
 	SYNC: PREFIX + '__sync__',
 	MSG: PREFIX + '__msg__'
 };
-// master name
-var MASTER = 'master';
 // minimum lifespan for workers
 // workers must be alive for at least 10 second
 // otherwise it will NOT be auto re-spawn
@@ -170,13 +170,7 @@ ee.isCluster = function () {
 };
 
 ee.send = function (workerId, msgData) {
-	var data = {
-		command: CMD.MSG,
-		targetWorkerId: workerId,
-		msg: msgData,
-		from: null,
-		pid: process.pid
-	};
+	var data = msg.createMsgData(CMD.MSG, workerId, msgData);
 
 	if (isMaster) {
 		var targetWorker = cluster.workers[workerId];		
@@ -287,35 +281,7 @@ function createWorker() {
 		}
 		switch (data.command) {
 			case CMD.MSG:
-				// pass the message to the target worker
-				var targetWorker = cluster.workers[data.targetWorkerId];
-
-				if (!targetWorker) {
-					logger.error(
-						'Message target worker [ID: ' + data.targetWorkerId +
-						'] no longer exists'
-					);
-					return;
-				}
-
-				if (targetWorker.id === worker.id) {
-					// ignore message to itself
-					return;
-				}
-				
-				logger.verbose(
-					'Relay message to worker [' + targetWorker.id + ']' +
-					' from worker [' + data.from + '] via master:',
-					data.msg 
-				);
-
-				var relayedData = {
-					command: CMD.MSG,
-					from: data.from,
-					pid: data.pid,
-					msg: data.msg
-				};
-				msg.send(relayedData, cluster.workers[data.targetWorkerId]);
+				msg.relay(CMD.MSG, data, worker);
 				break;
 			default:
 				break;
