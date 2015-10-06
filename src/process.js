@@ -49,6 +49,8 @@ var reloaded = 0;
 var shutdownTasks = [];
 // worker map used for master process only, but synced from master to workers
 var workerMap = {};
+// function to be executed right BEFORE exit of the process
+var onExit = null;
 
 var ee = new EventEmitter();
 
@@ -66,6 +68,15 @@ ee.addShutdownTask = function (task, runOnMaster) {
 	shutdownTasks.push({ task: task, runOnMaster: runOnMaster });
 
 	return true;
+};
+
+ee.onExit = function (task) {
+
+	if (typeof task !== 'function') {
+		return false;
+	}
+
+	onExit = task;
 };
 
 ee.start = function (config) {
@@ -558,6 +569,13 @@ function shutdown(errorShutdown, sig) {
 
 		ee.emit('exit', code, sig || null);
 
+		if (onExit) {
+			onExit(function () {
+				process.exit(code);
+			});
+			return;
+		}
+	
 		process.exit(code);
 	};
 

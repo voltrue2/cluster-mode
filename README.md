@@ -18,7 +18,7 @@ npm install cluster-mode
 var cluster = require('cluster-mode');
 var config = {
 	max: 8 // start the application with 8 workers
-	log: require('bunyan').createLogger({ name: 'myClusterApp' })
+	logger: require('bunyan').createLogger({ name: 'myClusterApp' })
 };
 cluster.start(config);
 ```
@@ -56,6 +56,12 @@ var success = cluster.addShutdownTask(function (cb) {
 // success would be true, if it added the task function
 // false means that is task function will NOT be executed on master process
 ```
+
+### .onExit(task [Function])
+
+Assigns a function to be executed at the moment of exitting of the application process.
+
+The difference from `.addShutdownTask()` is that `.onExit()` will be executed after all shutdown tasks. 
 
 ### .start(config [*Object])
 

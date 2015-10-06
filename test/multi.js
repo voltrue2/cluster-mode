@@ -24,6 +24,11 @@ prcs.addShutdownTask(function (cb) {
 	}, 300);
 });
 
+prcs.onExit(function (cb) {
+	console.log('GOOD BYE!!!!!!');
+	cb();
+});
+
 prcs.on('message', function (msg) {
 	console.log('---------------------> message received:', msg);
 });
