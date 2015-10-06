@@ -500,12 +500,16 @@ function exit(errorExit, sig) {
 
 	if (!isMaster) {
 		// ask master to exit the process
-		msg.send({
-			command: CMD.EXIT,
-			error: {
+		var e = null;
+		if (errorExit) {
+			e = {
 				message: errorExit.message,
 				stack: errorExit.stack
-			},
+			};
+		}
+		msg.send({
+			command: CMD.EXIT,
+			error: e,
 			sig: sig
 		});
 		return;
