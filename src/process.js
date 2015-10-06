@@ -186,7 +186,7 @@ ee.send = function (workerId, msgData) {
 	if (isMaster) {
 		var targetWorker = cluster.workers[workerId];		
 
-		if (!targetWorker) {
+		if (workerId && !targetWorker) {
 			logger.error(
 				'Message target worker [ID: ' + workerId +
 				'] no longer exists'
@@ -268,6 +268,7 @@ function startMaster() {
 
 	// set up process termination listener on workers
 	cluster.on('exit', handleWorkerExit);
+	// 
 	// spawn workers
 	for (var i = 0; i < numOfWorkers; i++) {
 		createWorker();
@@ -293,6 +294,14 @@ function createWorker() {
 		switch (data.command) {
 			case CMD.MSG:
 				msg.relay(CMD.MSG, data, worker);
+				break;
+			case CMD.EXIT:
+				logger.info(
+					'Exit instruction from worker:',
+					worker.process.pid,
+					data.error || null
+				);
+				exit(data.error, data.sig || SIGNALS.SIGTERM);
 				break;
 			default:
 				break;
@@ -490,14 +499,22 @@ function reload() {
 function exit(errorExit, sig) {
 
 	if (!isMaster) {
-		// this is master only
+		// ask master to exit the process
+		msg.send({
+			command: CMD.EXIT,
+			error: {
+				message: errorExit.message,
+				stack: errorExit.stack
+			},
+			sig: sig
+		});
 		return;
 	}
 
 	if (shutdownLock) {
 		logger.warn('Process is already shutting down: This exit instruction is ignored');
 		if (errorExit) {
-			logger.error('Exit instruction by error:' + errorExit.message + '\n' + errorExit.stack);
+			logger.error('Exit instruction by error: ' + errorExit.message + '\n' + errorExit.stack);
 		}
 		return;
 	}
@@ -505,7 +522,8 @@ function exit(errorExit, sig) {
 	shutdownLock = true;
 	
 	if (errorExit) {
-		logger.error(
+		var elog = logger.fatal || logger.error;
+		elog(
 			'Exiting with an error [signal: ' + sig +
 			' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
 			Object.keys(cluster.workers).length + '): ' + (errorExit.stack || null)

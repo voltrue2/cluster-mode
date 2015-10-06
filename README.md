@@ -115,9 +115,7 @@ The default is `true`.
 
 ### .stop(error [*Error Object])
 
-You must invoke this function to stop the process. 
-
-In cluster, you **MUST** call this in the master process.
+If invoked from cluster worker, it will send a request to terminate the process to master.
 
 **NOTE:** If an error object is passed, cluster-module will log an error log and terminates the process with `FATAL ERROR`.
 
