@@ -516,7 +516,6 @@ function exit(errorExit, sig) {
 	}
 
 	if (shutdownLock) {
-		logger.warn('Process is already shutting down: This exit instruction is ignored');
 		if (errorExit) {
 			logger.error('Exit instruction by error: ' + errorExit.message + '\n' + errorExit.stack);
 		}
