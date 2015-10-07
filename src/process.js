@@ -299,7 +299,7 @@ function createWorker() {
 				logger.info(
 					'Exit instruction from worker:',
 					worker.process.pid,
-					data.error || null
+					data.error ? 'with an error' : ''
 				);
 				exit(data.error, data.sig || SIGNALS.SIGTERM);
 				break;
