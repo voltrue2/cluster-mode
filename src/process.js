@@ -241,7 +241,7 @@ function startClusterMode() {
 
 function startListeners() {
 
-	logger.info('Start listeners');
+	logger.info('Start listeners [pid:', process.pid + ']');
 
 	process.on(SIGNALS.SIGHUP, reload);
 	process.on(SIGNALS.SIGINT, function () {
@@ -442,7 +442,7 @@ function startWorker() {
 		switch (data.command) {
 			case CMD.EXIT:
 				logger.info('Shutting down worker process for exit');
-				shutdown();
+				shutdown(data.error || null);
 				return;
 			case CMD.RELOAD:
 				logger.info('Shutting down worker process for reload');
@@ -497,7 +497,7 @@ function reload() {
 }
 
 function exit(errorExit, sig) {
-
+	var print = (errorExit) ? (logger.fatal || logger.error) : logger.info;
 	if (!isMaster) {
 		// ask master to exit the process
 		var e = null;
@@ -517,7 +517,7 @@ function exit(errorExit, sig) {
 
 	if (shutdownLock) {
 		if (errorExit) {
-			logger.error('Exit instruction by error: ' + errorExit.message + '\n' + errorExit.stack);
+			print('Exit instruction by error: ' + errorExit.message + '\n' + errorExit.stack);
 		}
 		return;
 	}
@@ -525,14 +525,13 @@ function exit(errorExit, sig) {
 	shutdownLock = true;
 	
 	if (errorExit) {
-		var elog = logger.fatal || logger.error;
-		elog(
+		print(
 			'Exiting with an error [signal: ' + sig +
 			' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
 			Object.keys(cluster.workers).length + '): ' + (errorExit.stack || null)
 		);
 	} else {
-		logger.info(
+		print(
 			'Exiting [signal: ' + sig + ' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
 			Object.keys(cluster.workers).length + ')'
 		);
@@ -544,9 +543,7 @@ function exit(errorExit, sig) {
 		if (noMoreWorkers()) {
 			// all workers have exited
 			// now exit master
-
-			logger.info('Master is exiting');
-
+			print('Master is exiting');
 			shutdown(sig);
 			return;
 		}
@@ -555,11 +552,18 @@ function exit(errorExit, sig) {
 		var keys = Object.keys(cluster.workers);
 		async.eachSeries(keys, function (id, next) {
 			emitter.once('workerExit', next);
-			logger.info(
+			print(
 				'Instruct worker process to exit: ' +
 				'(worker: ' + id + ') '
 			);
-			msg.send({ command: CMD.EXIT, error: errorExit }, cluster.workers[id]);
+			var e = null;
+			if (errorExit) {
+				e = {
+					message: errorExit.message,
+					stack: errorExit.stack
+				};
+			}
+			msg.send({ command: CMD.EXIT, error: e }, cluster.workers[id]);
 		});
 		return;
 	}
@@ -570,6 +574,7 @@ function exit(errorExit, sig) {
 }
 
 function shutdown(errorShutdown, sig) {
+	var print = (errorShutdown) ? (logger.fatal || logger.error) : logger.info;
 	var counter = 0;
 	var taskList = shutdownTasks.filter(function (item) {
 		if (ee.isMaster()) {
@@ -586,7 +591,10 @@ function shutdown(errorShutdown, sig) {
 			code = 1;
 		}
 
-		logger.info('Exit: PID - ' + process.pid);
+		print('Exit [pid:', process.pid + ']');
+		if (errorShutdown) {
+			print(errorShutdown);
+		}
 
 		ee.emit('exit', code, sig || null);
 
@@ -609,7 +617,7 @@ function shutdown(errorShutdown, sig) {
 
 		counter += 1;
 
-		logger.info(
+		print(
 			'Execute shutdown task:',
 			counter + ' out of ' + taskList.length
 		);
