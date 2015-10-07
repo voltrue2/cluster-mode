@@ -97,7 +97,7 @@ This property manages the number of worker processes you want to start with.
 
 **NOTE:** Set this value to `0` to start your application in **non-cluster** mode (no workers).
 
-##### log (Optional)
+##### logger (Optional)
 
 `cluster-mode` module supports, `bunyan`, `winston`, `log4js` and `gracelog`.
 
