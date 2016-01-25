@@ -528,7 +528,7 @@ function exit(errorExit, sig) {
 		print(
 			'Exiting with an error [signal: ' + sig +
 			' ' + sigCode.getNameByExitCode(sig) + '] (# of workers: ' +
-			Object.keys(cluster.workers).length + '): ' + (errorExit.stack || null)
+			Object.keys(cluster.workers).length + ')'
 		);
 	} else {
 		print(
@@ -593,6 +593,7 @@ function shutdown(errorShutdown, sig) {
 
 		print('Exit [pid:', process.pid + ']');
 		if (errorShutdown) {
+			code = 1;
 			print(errorShutdown);
 		}
 

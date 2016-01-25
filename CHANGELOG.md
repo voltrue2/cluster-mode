@@ -4,6 +4,28 @@ This is a list of manually maintained changes and updates for each version.
 
 ***
 
+Version 0.2.0
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix on error exit
+
+The porcess was not exiting with exit code 1 when an error object is passed.
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 Version 0.0.12
 
 ## Added
