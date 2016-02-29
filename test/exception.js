@@ -11,13 +11,13 @@ var config = {
 	autoSpawn: true
 };
 
-prcs.addShutdownTask(function (cb) {
+prcs.addShutdownTask(function hundred(cb) {
 	setTimeout(function () {
 		cb();
 	}, 100);
 }, false);
 
-prcs.addShutdownTask(function (cb) {
+prcs.addShutdownTask(function threeHundred(cb) {
 	setTimeout(function () {
 		cb();
 	}, 300);

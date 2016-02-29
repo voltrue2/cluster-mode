@@ -619,7 +619,7 @@ function shutdown(errorShutdown, sig) {
 		counter += 1;
 
 		print(
-			'Execute shutdown task:',
+			'Execute shutdown task (' + (item.task.name || 'Anonymous') + '):',
 			counter + ' out of ' + taskList.length
 		);
 
