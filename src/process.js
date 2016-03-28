@@ -1,7 +1,7 @@
 'use strict';
 
 var os = require('os');
-var async = require('async');
+var async = require('../lib/async');
 var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
 var cluster = require('cluster');

@@ -2,6 +2,24 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 0.2.2
+
+## Added
+
+None
+
+## Changed
+
+#### Removed async as dependency
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
 ***
 
 Version 0.2.0
