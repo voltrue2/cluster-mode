@@ -2,6 +2,24 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 0.2.4
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix when starting with 1 worker
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
 ## Version 0.2.3
 
 ## Added

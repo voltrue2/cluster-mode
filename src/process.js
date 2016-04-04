@@ -217,7 +217,7 @@ function start() {
 }
 
 function startClusterMode() {
-	if (numOfWorkers > 1) {
+	if (numOfWorkers >= 1) {
 		// cluster mode
 		switch (cluster.isMaster) {
 			case true:
