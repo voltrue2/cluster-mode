@@ -1,7 +1,7 @@
 {
 	"name": "cluster-mode",
 	"description": "A cluster process management module for node.js applications.",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"author": "Nobuyori Takahashi <voltrue2@yahoo.com>",
 	"repository": {
 		"type": "git",

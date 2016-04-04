@@ -286,11 +286,6 @@ function createWorker() {
 	// this is a listener created in master process to listen
 	// to the messages sent from a worker to master
 	worker.on('message', function (data) {
-		try {
-			data = JSON.parse(data);
-		} catch (e) {
-			logger.warn('Message data not JSON:', data);
-		}
 		switch (data.command) {
 			case CMD.MSG:
 				msg.relay(CMD.MSG, data, worker);
@@ -428,17 +423,6 @@ function handleReloading() {
 function startWorker() {
 	// set up message lsitener: master to worker
 	process.on('message', function (data) {
-		try {
-			data = JSON.parse(data);
-		} catch (e) {
-			logger.warn('Message data not JSON:', data);
-		}
-
-		if (!data.command) {
-			// not a command message
-			return;
-		}
-
 		switch (data.command) {
 			case CMD.EXIT:
 				logger.info('Shutting down worker process for exit');

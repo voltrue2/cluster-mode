@@ -2,6 +2,26 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 0.2.3
+
+## Added
+
+None
+
+## Changed
+
+#### Removed unnecessary JSON parsing
+
+#### Removed warning logs for none JSON messages
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
 ## Version 0.2.2
 
 ## Added
