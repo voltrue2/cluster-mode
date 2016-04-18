@@ -20,7 +20,9 @@ var config = {
 	max: 8 // start the application with 8 workers
 	logger: require('bunyan').createLogger({ name: 'myClusterApp' })
 };
-cluster.start(config);
+cluster.start(config, function () {
+	// cluster process is ready
+});
 ```
 
 ***
@@ -63,11 +65,13 @@ Assigns a function to be executed at the moment of exitting of the application p
 
 The difference from `.addShutdownTask()` is that `.onExit()` will be executed after all shutdown tasks. 
 
-### .start(config [*Object])
+### .start(config [*Object], callback [*Function])
 
 You must invoke this function in order to start your application process.
 
 If you do not pass `config`, `cluster-mode` will fall back to its default settings:
+
+**NOTE**: The optional callback is called when the process is ready.
 
 **Default**
 
@@ -159,13 +163,13 @@ If invalid ID is given, the function will return `null`.
 
 **NOTE:** If `sync` of the configuration is `false`, the function returns `null`.
 
-### .registerCommand(cmd [string], handler [function])
+### .registerCommand(cmd [String], handler [Function])
 
 Registers a command handler in master process.
 
 The handler will have message object and callback function passed.
 
-**NOTE**: This is only available in master process **ONLY**
+**NOTE**: This is only available in **master** process **ONLY**
 
 ```javascript
 var cluster = require('cluster-mode');
@@ -192,11 +196,11 @@ if (!cluster.isMaster()) {
 }
 ```
 
-### .sendCommand(cmd [string], callback [function]);
+### .sendCommand(cmd [String], callback [Function]);
 
 Requests the master process to execute pre-registered command handler from a worker.
 
-**NOTE:** This is only available in worker process **ONLY**.
+**NOTE:** This is only available in **worker** process **ONLY**.
 
 ```javascript
 cluster.sendCommand('getSharedData', { id: 'xxx' }, function (error, res) {
@@ -207,6 +211,32 @@ cluster.sendCommand('getSharedData', { id: 'xxx' }, function (error, res) {
 	console.log(res.value);
 });
 ```
+
+### .id()
+
+Returns its own worker ID
+
+It returns `null` for master process.
+
+### .registerRole(roleName [String], callback [Function])
+
+Registers a role. It means that the worker process will be refered to as the given `roleName`.
+
+The callback will have an error if the role is already taken or failed to register.
+
+**NOTE 1**: This is available in **worker** process **ONLY**
+
+**NOTE 2**: If `autoSpawn` is `true`, dead worker's role will be automatically inherited to the new worker.
+
+### .unregisterRole(callback [Function])
+
+Unregisters a role.
+
+**NOTE**: This is available in **worker** process **ONLY**
+
+### .sendToRole(roleName [String], message [Mixed])
+
+Sends a message to a given `role`.
 
 ***
 

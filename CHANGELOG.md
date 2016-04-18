@@ -10,9 +10,16 @@ This is a list of manually maintained changes and updates for each version.
 
 #### .registerCommand() added
 
-#### Changed
+## Changed
 
-None
+#### .start() has optional callback function
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.start(config, function () {
+	// process is now ready
+});
+```
 
 ## Deprecated
 

@@ -9,6 +9,7 @@ var logger = require('../lib/logger');
 var msg = require('../lib/msg');
 var sigCode = require('../lib/sigcode');
 var sendAndRecv = require('../lib/sendAndRecv');
+var role = require('../lib/role');
 
 // default number of max workers to start
 var MAX = os.cpus().length;
@@ -27,7 +28,14 @@ var CMD = {
 	RELOAD: PREFIX + '__reload__',
 	EXIT: PREFIX + '__exit__',
 	SYNC: PREFIX + '__sync__',
-	MSG: PREFIX + '__msg__'
+	MSG: PREFIX + '__msg__',
+	ID: PREFIX + '__id__',
+	ROLE_MSG: PREFIX + '__rmsg__'
+};
+// role management
+var ROLES = {
+	REG: PREFIX + '__roleReg__',
+	UNREG: PREFIX + '__roleUnreg__'
 };
 // minimum lifespan for workers
 // workers must be alive for at least 10 second
@@ -52,6 +60,8 @@ var shutdownTasks = [];
 var workerMap = {};
 // function to be executed right BEFORE exit of the process
 var onExit = null;
+// worker only: its own worker ID notified by master
+var myId;
 
 var ee = new EventEmitter();
 
@@ -80,7 +90,7 @@ ee.onExit = function (task) {
 	onExit = task;
 };
 
-ee.start = function (config) {
+ee.start = function (config, cb) {
 
 	if (cluster.isMaster) {
 		// either non-cluster or master
@@ -116,7 +126,7 @@ ee.start = function (config) {
 	}
 
 	// start cluster process
-	start();
+	start(cb);
 };
 
 ee.getWorkers = function () {
@@ -181,10 +191,44 @@ ee.isCluster = function () {
 	return false;
 };
 
+ee.id = function () {
+	if (isMaster) {
+		return null;
+	}
+	return myId;
+};
+
 ee.send = function (workerId, msgData) {
 	var data = msg.createMsgData(CMD.MSG, workerId, msgData);
 
 	if (isMaster) {
+		var targetWorker = cluster.workers[workerId];		
+
+		if (workerId && !targetWorker) {
+			logger.error(
+				'Message target worker [ID: ' + workerId +
+				'] no longer exists'
+			);
+			return false;
+		}
+
+		data.from = MASTER;
+
+		msg.send(data, cluster.workers[workerId]);
+		return true;
+	}
+
+	data.from = cluster.worker.id;
+
+	msg.send(data, null);
+	return true;
+};
+
+ee.sendToRole = function (roleName, msgData) {
+	var data = msg.createMsgData(CMD.ROLE_MSG, roleName, msgData);
+
+	if (isMaster) {
+		var workerId = role.getWorkerIdByRole(roleName);
 		var targetWorker = cluster.workers[workerId];		
 
 		if (workerId && !targetWorker) {
@@ -226,29 +270,57 @@ ee.sendCommand = function (cmd, data, cb) {
 	sendAndRecv.sendRequest(cmd, data, cb);
 };
 
+ee.registerRole = function (roleName, cb) {
+	
+	if (isMaster) {
+		return cb(new Error('OnlyWorkerMayRegisterRole'));
+	}
+
+	var data = {
+		roleName: roleName,
+		workerId: myId 
+	};
+	sendAndRecv.sendRequest(ROLES.REG, data, cb);
+};
+
+ee.unregisterRole = function unregisterRole(cb) {
+	
+	if (isMaster) {
+		if (typeof cb !== 'function') {
+			return;
+		}
+		return cb(new Error('OnlyWorkerMayUnregisterRole'));
+	}
+	
+
+	var data = {
+		workerId: myId
+	};
+	
+	sendAndRecv.sendRequest(ROLES.UNREG, data, cb);
+};
+
 module.exports = ee;
 
-function start() {
+function start(cb) {
 	startListeners();
-	var inClusterMode = startClusterMode();
+	var inClusterMode = startClusterMode(cb);
 	if (isMaster) {
 		logger.info('Starting in cluster mode: ' + inClusterMode);
 	}
 }
 
-function startClusterMode() {
+function startClusterMode(cb) {
 	if (numOfWorkers >= 1) {
 		// cluster mode
 		switch (cluster.isMaster) {
 			case true:
-				startMaster();
+				startMaster(cb);
 				ee.emit('cluster', 'master.ready', process.pid);
 				ee.emit('cluster.master.ready', process.pid);
 				break;
 			case false:
-				startWorker();
-				ee.emit('cluster', 'worker.ready', process.pid);
-				ee.emit('cluster.worker.ready', process.pid);
+				startWorker(cb);
 				break;
 		}
 		return true;
@@ -256,6 +328,9 @@ function startClusterMode() {
 	// non cluster mode
 	ee.emit('cluster', 'non.ready');
 	ee.emit('cluster.non.ready');
+	if (typeof cb === 'function') {
+		cb();
+	}
 	return false;
 }
 
@@ -282,16 +357,34 @@ function startListeners() {
 	});
 }
 
-function startMaster() {
+function startMaster(cb) {
 
 	logger.info('Starting master process');
 
 	// set up process termination listener on workers
 	cluster.on('exit', handleWorkerExit);
-	// 
+	
+	// set up role management data: { roleName: 'yy', workerId: xx }
+	sendAndRecv.registerCommand(ROLES.REG, function (data, callback) {
+		var success = role.registerRole(data.roleName, data.workerId);
+		if (!success) {
+			return callback(new Error('FailedToRegisterRole:' + data.roleName));
+		}
+		callback();
+	});
+	sendAndRecv.registerCommand(ROLES.UNREG, function (data, callback) {
+		role.unregisterWorker(data.workerId);
+		callback();
+	});
+ 
 	// spawn workers
 	for (var i = 0; i < numOfWorkers; i++) {
 		createWorker();
+	}
+
+	if (typeof cb === 'function') {
+		// callback from cluster.start(config, cb)
+		cb();
 	}
 }
 
@@ -308,6 +401,12 @@ function createWorker() {
 	worker.on('message', function (data) {
 		switch (data.command) {
 			case CMD.MSG:
+				msg.relay(CMD.MSG, data, worker);
+				break;
+			case CMD.ROLE_MSG:
+				// for this message type targetWorkerId is roleName
+				var roleName = data.targetWorkerId;
+				data.targetWorkerId = role.getWorkerIdByRole(roleName);
 				msg.relay(CMD.MSG, data, worker);
 				break;
 			case CMD.EXIT:
@@ -327,6 +426,9 @@ function createWorker() {
 	});
 
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
+	
+	// notify worker its own worker ID
+	msg.send({ command: CMD.ID, id: worker.id }, worker);
 
 	// sync worker map with all workers
 	syncWorkerMap();
@@ -363,6 +465,10 @@ function handleWorkerExit(worker, code, sig) {
 	// this is for master process
 	if (!worker.suicide && autoSpawn) {
 		handleAutoSpawn(worker, workerData, code, sig);
+	}
+	// unregister role from the worker
+	if (!autoSpawn) {
+		role.unregisterWorker(worker.id);
 	}
 	// this is for master process
 	if (noMoreWorkers()) {
@@ -409,6 +515,20 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 		}
 		var newWorker = createWorker();
 		ee.emit('auto.spawn', newWorker.process.pid, newWorker.id);
+		var roleName = role.getRoleByWorkerId(worker.id);
+		if (roleName) {
+			// the dead worker had a role, the new worker will now inherit it automatically
+			// unregister role from the worker
+			role.unregisterWorker(worker.id);
+			var success = role.registerRole(roleName, newWorker.id);
+			logger.info(
+				'Dead worker (worker:' + worker.id + ') [pid:' + workerData.pid + ']',
+				'had a role "' + roleName + '"',
+				'New worker inherited the role',
+				'(worker:' + newWorker.id + ') [pid:' + newWorker.process.pid + ']:',
+				success
+			);
+		}
 	} else {
 		logger.info(
 			'Master process is instructing to shutdown (ID: ' + worker.id + ') [pid: ' +
@@ -443,7 +563,9 @@ function handleReloading() {
 	}
 }
 
-function startWorker() {
+function startWorker(cb) {
+	// register shutdown task
+	module.exports.addShutdownTask(ee.unregisterRole);
 	// set up message lsitener: master to worker
 	process.on('message', function (data) {
 		switch (data.command) {
@@ -464,6 +586,13 @@ function startWorker() {
 			case CMD.MSG:
 				ee.emit('message', { from: data.from, msg: data.msg });
 				break;
+			case CMD.ID:
+				myId = data.id;
+				logger.verbose('Worker ID notified:', data);
+				logger.info('Worker process started [pid: ' + process.pid + '] [worker:' + myId + ']');
+				ee.emit('cluster', 'worker.ready', process.pid);
+				ee.emit('cluster.worker.ready', process.pid);
+				break;
 			default:
 				break;
 		}
@@ -471,7 +600,9 @@ function startWorker() {
 		sendAndRecv.handleResponse(data);
 	});
 
-	logger.info('Worker process started [pid: ' + process.pid + ']');
+	if (typeof cb === 'function') {
+		ee.once('cluster.worker.ready', cb);
+	}
 }
 
 function reload() {
