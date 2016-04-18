@@ -228,6 +228,8 @@ The callback will have an error if the role is already taken or failed to regist
 
 **NOTE 2**: If `autoSpawn` is `true`, dead worker's role will be automatically inherited to the new worker.
 
+**NOTE 3**: A role is unique to a woker. You may NOT have duplicated roles nor share the same role with other workers.
+
 ### .unregisterRole(callback [Function])
 
 Unregisters a role.
