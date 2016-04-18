@@ -6,6 +6,14 @@ A cluster process management module for node.js application.
 
 This module's intention is not to replace the built-in `cluster` module, but to extend it for usability and functionality.
 
+## How This Module Does
+
+- Manages starting and graceful shut down of node.js cluster including optional auto respawning of dead worker processes
+
+- Manages communications amongst the cluster processes including request/response type communication
+
+- Worker role management where each worker can assign themselves to be a specific roled worker process
+
 ## How To Install
 
 ```
