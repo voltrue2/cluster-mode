@@ -6,7 +6,7 @@ A cluster process management module for node.js application.
 
 This module's intention is not to replace the built-in `cluster` module, but to extend it for usability and functionality.
 
-## How Cluster-Mode Does
+## What Cluster-Mode Does
 
 - Manages starting and graceful shutdown of node.js cluster including optional auto respawning of dead worker processes
 
