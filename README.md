@@ -258,7 +258,9 @@ cluster.registerRole(['HERO', 'VILLAIN'], function (error, registedRole) {
 
 Unregisters a role.
 
-**NOTE**: This is available in **worker** process **ONLY**
+**NOTE 1**: This is available in **worker** process **ONLY**
+
+**NOTE 2**: When a worker process that has a `role` dies, the registered role is freed and any other worker process without a `role` may claim it. by calling `.registerRole()`.
 
 ### .sendToRole(roleName [String], message [Mixed])
 
