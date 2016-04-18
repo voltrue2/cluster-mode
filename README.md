@@ -228,7 +228,7 @@ If given an array of role names, it will try to register the first available rol
 
 **NOTE 1**: This is available in **worker** process **ONLY**
 
-**NOTE 2**: A role is unique to a woker. You may NOT have duplicated roles nor share the same role with other workers.
+**NOTE 2**: A role is unique to a woker. You may NOT have duplicated roles or share the same role with other workers.
 
 Example with string:
 
