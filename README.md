@@ -218,17 +218,41 @@ Returns its own worker ID
 
 It returns `null` for master process.
 
-### .registerRole(roleName [String], callback [Function])
+### .registerRole(roleName [String/Array], callback [Function])
 
 Registers a role. It means that the worker process will be refered to as the given `roleName`.
 
 The callback will have an error if the role is already taken or failed to register.
 
+If given an array of role names, it will try to register the first available role and return the assigned role name.
+
 **NOTE 1**: This is available in **worker** process **ONLY**
 
-**NOTE 2**: If `autoSpawn` is `true`, dead worker's role will be automatically inherited to the new worker.
+**NOTE 2**: A role is unique to a woker. You may NOT have duplicated roles nor share the same role with other workers.
 
-**NOTE 3**: A role is unique to a woker. You may NOT have duplicated roles nor share the same role with other workers.
+Example with string:
+
+```javascript
+cluster.registerRole('HERO', function (error, registedRole) {
+	if (error) {
+		// oh no...
+	}
+	// HERO
+	console.log('I am', registeredRole);
+});
+```
+
+Example with array:
+
+```javascript
+cluster.registerRole(['HERO', 'VILLAIN'], function (error, registedRole) {
+	if (error) {
+		// oh no...
+	}
+	// HERO or VILLAIN
+	console.log('I am', registeredRole);
+});
+```
 
 ### .unregisterRole(callback [Function])
 

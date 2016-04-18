@@ -21,18 +21,24 @@ cluster.start({
 			cb(new Error('error'));
 		});
 
+		var list = ['HERO','VILLAIN'];
+		var index = 0;
 		setInterval(function () {
-			cluster.sendToRole('HERO', 'Hello from master:' + Date.now());
+			cluster.sendToRole(list[index], 'Hello from master:' + Date.now());
+			index += 1;
+			if (index ===  list.length) {
+				index = 0;
+			}
 		}, 10000);
 	}
 
 	if (!cluster.isMaster()) {
-		cluster.registerRole('HERO', function (error) {
+		cluster.registerRole(['HERO', 'VILLAIN'], function (error, roleName) {
 			if (error) {
-				console.error('Error: failed to be a HERO', cluster.id());
+				console.error('Error: failed to be a HERO OR VILLAIN', cluster.id());
 				return;
 			}
-			console.log('I am a HERO', cluster.id());
+			console.log('I am a ' + roleName, cluster.id());
 		});
 		cluster.sendCommand('test', 'test request', function (error, res) {
 			console.log('response for test:', error, res);
@@ -41,8 +47,14 @@ cluster.start({
 			console.log('response for error:', error, res);
 		});
 
+		var list = ['HERO','VILLAIN'];
+		var index = 1;
 		setInterval(function () {
-			cluster.sendToRole('HERO', 'Hello from worker(' + cluster.id() + '):' + Date.now());
+			cluster.sendToRole(list[index], 'Hello from worker(' + cluster.id() + '):' + Date.now());
+			index += 1;
+			if (index ===  list.length) {
+				index = 0;
+			}
 		}, 7000);
 	}
 

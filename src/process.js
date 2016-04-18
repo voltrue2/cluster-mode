@@ -364,13 +364,22 @@ function startMaster(cb) {
 	// set up process termination listener on workers
 	cluster.on('exit', handleWorkerExit);
 	
-	// set up role management data: { roleName: 'yy', workerId: xx }
+	// set up role management data: { roleName: 'yy'/['aa','bb','cc'], workerId: xx }
 	sendAndRecv.registerCommand(ROLES.REG, function (data, callback) {
-		var success = role.registerRole(data.roleName, data.workerId);
-		if (!success) {
-			return callback(new Error('FailedToRegisterRole:' + data.roleName));
+		var success = false;
+		var roleName = data.roleName;
+		if (!Array.isArray(roleName)) {
+			roleName = [roleName];
 		}
-		callback();
+		for (var i = 0, len = roleName.length; i < len; i++) {
+			success = role.registerRole(roleName[i], data.workerId);
+			if (success) {
+				return callback(null, roleName[i]);
+			}
+		}
+		if (!success) {
+			return callback(new Error('FailedToRegisterRole:' + JSON.stringify(roleName)));
+		}
 	});
 	sendAndRecv.registerCommand(ROLES.UNREG, function (data, callback) {
 		role.unregisterWorker(data.workerId);
@@ -456,6 +465,8 @@ function handleWorkerExit(worker, code, sig) {
 	var workerData = workerMap[worker.id];
 	// remove from the map
 	delete workerMap[worker.id];
+	// unregister role from the worker
+	role.unregisterWorker(worker.id);
 
 	// this is for master process
 	if (isReloading) {
@@ -465,10 +476,6 @@ function handleWorkerExit(worker, code, sig) {
 	// this is for master process
 	if (!worker.suicide && autoSpawn) {
 		handleAutoSpawn(worker, workerData, code, sig);
-	}
-	// unregister role from the worker
-	if (!autoSpawn) {
-		role.unregisterWorker(worker.id);
 	}
 	// this is for master process
 	if (noMoreWorkers()) {
@@ -515,20 +522,6 @@ function handleAutoSpawn(worker, workerData, code, sig) {
 		}
 		var newWorker = createWorker();
 		ee.emit('auto.spawn', newWorker.process.pid, newWorker.id);
-		var roleName = role.getRoleByWorkerId(worker.id);
-		if (roleName) {
-			// the dead worker had a role, the new worker will now inherit it automatically
-			// unregister role from the worker
-			role.unregisterWorker(worker.id);
-			var success = role.registerRole(roleName, newWorker.id);
-			logger.info(
-				'Dead worker (worker:' + worker.id + ') [pid:' + workerData.pid + ']',
-				'had a role "' + roleName + '"',
-				'New worker inherited the role',
-				'(worker:' + newWorker.id + ') [pid:' + newWorker.process.pid + ']:',
-				success
-			);
-		}
 	} else {
 		logger.info(
 			'Master process is instructing to shutdown (ID: ' + worker.id + ') [pid: ' +
