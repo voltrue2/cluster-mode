@@ -207,7 +207,7 @@ ee.send = function (workerId, msgData) {
 		if (workerId && !targetWorker) {
 			logger.error(
 				'Message target worker [ID: ' + workerId +
-				'] no longer exists'
+				'] does not exist'
 			);
 			return false;
 		}
@@ -234,7 +234,7 @@ ee.sendToRole = function (roleName, msgData) {
 		if (workerId && !targetWorker) {
 			logger.error(
 				'Message target worker [ID: ' + workerId +
-				'] no longer exists'
+				'] does not exist'
 			);
 			return false;
 		}

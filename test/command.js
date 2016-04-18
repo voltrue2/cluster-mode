@@ -1,10 +1,12 @@
 'use strict';
 
+require('gracelog').config({ color: true, level: '>= info' });
 var logger = require('gracelog').create('test');
 var cluster = require('../');
 
 cluster.start({
 	max: 6,
+	sync: false,
 	autoSpawn: true,
 	logger: logger
 }, function () {
@@ -24,12 +26,12 @@ cluster.start({
 		var list = ['HERO','VILLAIN'];
 		var index = 0;
 		setInterval(function () {
-			cluster.sendToRole(list[index], 'Hello from master:' + Date.now());
+			cluster.sendToRole(list[index], 'Hello ' + list[index] + ' from master:' + Date.now());
 			index += 1;
 			if (index ===  list.length) {
 				index = 0;
 			}
-		}, 10000);
+		}, 10);
 	}
 
 	if (!cluster.isMaster()) {
@@ -39,6 +41,9 @@ cluster.start({
 				return;
 			}
 			console.log('I am a ' + roleName, cluster.id());
+		});
+		cluster.on('message', function (msg) {
+			console.log('worker', cluster.id(), 'received message:', msg);
 		});
 		cluster.sendCommand('test', 'test request', function (error, res) {
 			console.log('response for test:', error, res);
@@ -50,12 +55,12 @@ cluster.start({
 		var list = ['HERO','VILLAIN'];
 		var index = 1;
 		setInterval(function () {
-			cluster.sendToRole(list[index], 'Hello from worker(' + cluster.id() + '):' + Date.now());
+			cluster.sendToRole(list[index], 'Hello ' + list[index] + ' from worker(' + cluster.id() + '):' + Date.now());
 			index += 1;
 			if (index ===  list.length) {
 				index = 0;
 			}
-		}, 7000);
+		}, 7);
 	}
 
 });
