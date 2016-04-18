@@ -10,6 +10,12 @@ This is a list of manually maintained changes and updates for each version.
 
 #### .registerCommand() added
 
+#### .registerRole() added
+
+#### .unregisterRole() added
+
+#### .sendToRole() added
+
 ## Changed
 
 #### .start() has optional callback function
