@@ -8,6 +8,7 @@ var cluster = require('cluster');
 var logger = require('../lib/logger');
 var msg = require('../lib/msg');
 var sigCode = require('../lib/sigcode');
+var sendAndRecv = require('../lib/sendAndRecv');
 
 // default number of max workers to start
 var MAX = os.cpus().length;
@@ -21,7 +22,7 @@ var SIGNALS = {
 // master name
 var MASTER = 'master';
 // reload command
-var PREFIX = 'cLuSToR-mOdE';
+var PREFIX = '__custer-mode';
 var CMD = {
 	RELOAD: PREFIX + '__reload__',
 	EXIT: PREFIX + '__exit__',
@@ -206,6 +207,25 @@ ee.send = function (workerId, msgData) {
 	return true;
 };
 
+// handler will have data object passed
+ee.registerCommand = function (cmd, handler) {
+	
+	if (!isMaster) {
+		throw new Error('OnlyMasterMayReigsterCommandHandler');
+	}
+
+	sendAndRecv.registerCommand(cmd, handler);
+};
+
+ee.sendCommand = function (cmd, data, cb) {
+
+	if (isMaster) {
+		return cb(new Error('OnlyWorkerMaySendReuqest'));
+	}
+
+	sendAndRecv.sendRequest(cmd, data, cb);
+};
+
 module.exports = ee;
 
 function start() {
@@ -301,6 +321,9 @@ function createWorker() {
 			default:
 				break;
 		}
+
+		// handle send and receive message (if the data is not send and receive, it is ignored)
+		sendAndRecv.handleRequest(worker, data);
 	});
 
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
@@ -444,6 +467,8 @@ function startWorker() {
 			default:
 				break;
 		}
+		// send and receive response handler (if it is not the response, it is ignored)
+		sendAndRecv.handleResponse(data);
 	});
 
 	logger.info('Worker process started [pid: ' + process.pid + ']');

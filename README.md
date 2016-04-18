@@ -159,6 +159,55 @@ If invalid ID is given, the function will return `null`.
 
 **NOTE:** If `sync` of the configuration is `false`, the function returns `null`.
 
+### .registerCommand(cmd [string], handler [function])
+
+Registers a command handler in master process.
+
+The handler will have message object and callback function passed.
+
+**NOTE**: This is only available in master process **ONLY**
+
+```javascript
+var cluster = require('cluster-mode');
+cluster.config({
+	max: 4
+});
+
+if (cluster.isMaster()) {
+	cluster.registerCommand('addSharedData', function (msg, callback) {
+		sharedData[msg.id] = msg.value;
+		callback(null, { result: 'OK' });
+	});
+}
+
+if (!cluster.isMaster()) {
+	cluster.sendCommand('addSharedData', { id: 'xxx', value: 100 }, function (error, res) {
+		if (error) {
+			// oh no..
+		}
+		if (res.result === 'OK') {
+			// yay
+		}
+	});
+}
+```
+
+### .sendCommand(cmd [string], callback [function]);
+
+Requests the master process to execute pre-registered command handler from a worker.
+
+**NOTE:** This is only available in worker process **ONLY**.
+
+```javascript
+cluster.sendCommand('getSharedData', { id: 'xxx' }, function (error, res) {
+	if (error) {
+		// not good
+	}
+	// yay
+	console.log(res.value);
+});
+```
+
 ***
 
 ## Events

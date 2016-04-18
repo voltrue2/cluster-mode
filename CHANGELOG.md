@@ -2,6 +2,28 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.0.0
+
+## Added
+
+#### .sendCommand() added
+
+#### .registerCommand() added
+
+#### Changed
+
+None
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 0.2.4
 
 ## Added
