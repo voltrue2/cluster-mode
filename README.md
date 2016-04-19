@@ -204,7 +204,7 @@ if (!cluster.isMaster()) {
 }
 ```
 
-### .sendCommand(cmd [String], callback [Function]);
+### .sendCommand(cmd [String], data [Object], callback [Function]);
 
 Requests the master process to execute pre-registered command handler from a worker.
 
