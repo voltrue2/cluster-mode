@@ -2,6 +2,24 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.0.1
+
+## Added
+
+None
+
+## Changed
+
+#### Bug fix: Uncaught exception fixed when exiting clustered child processes
+
+## Deprecated
+
+None
+
+## Removed
+
+***
+
 ## Version 1.0.0
 
 ## Added

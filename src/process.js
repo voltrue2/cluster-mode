@@ -677,7 +677,7 @@ function exit(errorExit, sig) {
 			// all workers have exited
 			// now exit master
 			print('Master is exiting');
-			shutdown(sig);
+			shutdown(errorExit, sig);
 			return;
 		}
 		// there are more workers
@@ -697,6 +697,9 @@ function exit(errorExit, sig) {
 				};
 			}
 			msg.send({ command: CMD.EXIT, error: e }, cluster.workers[id]);
+		}, function () {
+			print('All workers have exited. Master is now exiting');
+			shutdown(errorExit, sig);
 		});
 		return;
 	}
