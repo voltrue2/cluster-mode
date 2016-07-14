@@ -2,6 +2,26 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.0.2
+
+## Added
+
+None
+
+## Changed
+
+#### Corrected error message for missing callback on send and receive
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.1
 
 ## Added
