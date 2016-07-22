@@ -177,7 +177,7 @@ Registers a command handler in master process.
 
 The handler will have message object and callback function passed.
 
-**NOTE**: This is only available in **master** process **ONLY**
+**NOTE**: If you register a command in worker, `.sendCommandToWorker()` must be called from **master** process. 
 
 ```javascript
 var cluster = require('cluster-mode');
@@ -220,11 +220,23 @@ cluster.sendCommand('getSharedData', { id: 'xxx' }, function (error, res) {
 });
 ```
 
+### .sendCommandToWorker(worker [Object], cmd [String], data [Object], callback [Function]);
+
+Requests the worker process to execute pre-registered command handler and respond back.
+
+**NOTE:** This is only available in **master** process **ONLY**.
+
 ### .id()
 
 Returns its own worker ID
 
 It returns `null` for master process.
+
+### .workers()
+
+Returns a map of worker objects.
+
+**NOTE:** Only available in **master** process.
 
 ### .registerRole(roleName [String/Array], callback [Function])
 

@@ -65,6 +65,17 @@ var myId;
 
 var ee = new EventEmitter();
 
+ee.workers = function () {
+	if (cluster.isMaster) {
+		var workers = {};
+		for (var id in cluster.workers) {
+			workers[id] = cluster.workers[id];
+		}
+		return workers;
+	}
+	return {};
+};
+
 ee.addShutdownTask = function (task, runOnMaster) {
 
 	if (typeof task !== 'function') {
@@ -253,21 +264,21 @@ ee.sendToRole = function (roleName, msgData) {
 
 // handler will have data object passed
 ee.registerCommand = function (cmd, handler) {
-	
-	if (!isMaster) {
-		throw new Error('OnlyMasterMayReigsterCommandHandler');
-	}
-
 	sendAndRecv.registerCommand(cmd, handler);
 };
 
 ee.sendCommand = function (cmd, data, cb) {
-
 	if (isMaster) {
 		return cb(new Error('OnlyWorkerMaySendReuqest'));
 	}
-
 	sendAndRecv.sendRequest(cmd, data, cb);
+};
+
+ee.sendCommandToWorker = function (worker, cmd, data, cb) {
+	if (!isMaster) {
+		return cb(new Error('OnlyMasterMaySendRequestToWorker'));
+	}
+	sendAndRecv.sendRequestToWorker(worker, cmd, data, cb);
 };
 
 ee.registerRole = function (roleName, cb) {
@@ -432,6 +443,8 @@ function createWorker() {
 
 		// handle send and receive message (if the data is not send and receive, it is ignored)
 		sendAndRecv.handleRequest(worker, data);
+		// handle response (if it is not a response, it is ignored)
+		sendAndRecv.handleResponse(data);
 	});
 
 	logger.info('Worker (ID: ' + worker.id + ') [pid: ' + worker.process.pid + '] created');
@@ -587,8 +600,11 @@ function startWorker(cb) {
 				ee.emit('cluster.worker.ready', process.pid);
 				break;
 			default:
+				logger.verbose('Worker [woreker:' + myId + '] received message:', data);
 				break;
 		}
+		// handle request (if it is not request, it is ignored)
+		sendAndRecv.handleRequest(null, data);
 		// send and receive response handler (if it is not a response, it is ignored)
 		sendAndRecv.handleResponse(data);
 	});

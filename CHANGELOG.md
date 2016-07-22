@@ -2,6 +2,30 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.1.0
+
+## Added
+
+None
+
+## Changed
+
+#### .sendCommandToWorker() added to master process
+
+#### .registerCommand() can now be called in worker
+
+#### .workers() added to master process
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.3
 
 ## Added
