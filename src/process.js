@@ -589,7 +589,7 @@ function startWorker(cb) {
 			default:
 				break;
 		}
-		// send and receive response handler (if it is not the response, it is ignored)
+		// send and receive response handler (if it is not a response, it is ignored)
 		sendAndRecv.handleResponse(data);
 	});
 

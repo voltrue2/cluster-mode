@@ -2,6 +2,26 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.0.3
+
+## Added
+
+None
+
+## Changed
+
+#### Corrected logs
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.0.2
 
 ## Added
