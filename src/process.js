@@ -487,7 +487,7 @@ function handleWorkerExit(worker, code, sig) {
 		return;
 	}
 	// this is for master process
-	if (!worker.suicide && autoSpawn) {
+	if (!worker.exitedAfterDisconnect && autoSpawn) {
 		handleAutoSpawn(worker, workerData, code, sig);
 	}
 	// this is for master process

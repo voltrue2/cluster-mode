@@ -2,6 +2,26 @@
 
 This is a list of manually maintained changes and updates for each version.
 
+## Version 1.2.0
+
+## Added
+
+None
+
+## Changed
+
+#### Remove the use of worker.suicide
+
+## Deprecated
+
+None
+
+## Removed
+
+None
+
+***
+
 ## Version 1.1.0
 
 ## Added
