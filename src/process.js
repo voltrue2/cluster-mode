@@ -572,7 +572,7 @@ function handleReloading() {
 function startWorker(cb) {
 	// register shutdown task
 	module.exports.addShutdownTask(ee.unregisterRole);
-	// set up message lsitener: master to worker
+	// set up message listener: master to worker
 	process.on('message', function (data) {
 		switch (data.command) {
 			case CMD.EXIT:
