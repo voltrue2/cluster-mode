@@ -131,6 +131,10 @@ If invoked from cluster worker, it will send a request to terminate the process 
 
 **NOTE:** If an error object is passed, cluster-module will log an error log and terminates the process with `FATAL ERROR`.
 
+### .terminate()
+
+Terminates the worker process that it calls. This method is only available in cluster mode worker processes.
+
 ### .isMaster()
 
 Returns `true` if your process is in `cluster-mode` (with workers) **and** a master process.
