@@ -580,11 +580,11 @@ function startWorker(cb) {
         switch (data.command) {
             case CMD.EXIT:
                 logger.info('Shutting down worker process for exit');
-                shutdown(data.error || null);
+                shutdown(data.error || null, data.sig || null);
                 return;
             case CMD.RELOAD:
                 logger.info('Shutting down worker process for reload');
-                shutdown();
+                shutdown(null, data.sig || null);
                 return;
             case CMD.SYNC:
                 logger.info('Synchronize worker map');
@@ -714,7 +714,7 @@ function exit(errorExit, sig) {
                     stack: errorExit.stack
                 };
             }
-            msg.send({ command: CMD.EXIT, error: e }, cluster.workers[id]);
+            msg.send({ command: CMD.EXIT, error: e, sig }, cluster.workers[id]);
         }, function () {
             print('All workers have exited. Master is now exiting');
             shutdown(errorExit, sig);
@@ -782,7 +782,7 @@ function shutdown(errorShutdown, sig) {
             counter + ' out of ' + taskList.length
         );
 
-        item.task(next);
+        item.task(next, sig);
     }, done);
 }
 
